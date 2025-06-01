@@ -10,14 +10,18 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SplashViewModel(
     val authStatusRepo: AuthStatus
 ): ViewModel() {
-    val authStatus: StateFlow<Boolean> = authStatusRepo.readAuthStatus()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+
+    private val isLoggedIn = MutableStateFlow<Boolean?>(null)
+    init {
+        checkAuthStatus()
+    }
     private val _uiState = MutableStateFlow(SplashUiState())
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
@@ -32,7 +36,13 @@ class SplashViewModel(
                 }
             }
             is SplashUiEvent.OnAnimationDone -> {
-                _uiState.value = _uiState.value.copy(isAnimationFinished = true)
+                viewModelScope.launch {
+                    if (isLoggedIn.value == true) {
+                        sendEffect(SplashUiEffect.NavigateToHome)
+                    } else {
+                        _uiState.value = _uiState.value.copy(isAnimationFinished = true)
+                    }
+                }
             }
 
             SplashUiEvent.OnUserLoggedIn -> {
@@ -45,5 +55,12 @@ class SplashViewModel(
 
     private suspend fun sendEffect(effect: SplashUiEffect) {
         _uiEffect.emit(effect)
+    }
+    private fun checkAuthStatus(){
+        viewModelScope.launch {
+            authStatusRepo.readAuthStatus().collectLatest{
+                isLoggedIn.value = it
+            }
+        }
     }
 }

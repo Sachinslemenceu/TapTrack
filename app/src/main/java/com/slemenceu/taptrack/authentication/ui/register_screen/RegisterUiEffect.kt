@@ -1,4 +1,6 @@
 package com.slemenceu.taptrack.authentication.ui.register_screen
 
-class RegisterUiEffect {
+sealed class RegisterUiEffect {
+    object NavigateToHome : RegisterUiEffect()
+    object PasswordUnmatched : RegisterUiEffect()
 }

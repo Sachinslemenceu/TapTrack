@@ -34,7 +34,6 @@ fun SplashScreen(
 
         val TAG = "SplashScreen"
         val uiState = viewModel.uiState.collectAsState().value
-        val isLoggedIn by viewModel.authStatus.collectAsState()
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash_ani))
         val progress by animateLottieCompositionAsState(
             composition = composition,
@@ -76,15 +75,14 @@ fun SplashScreen(
             }
         }
         else {
-            if (isLoggedIn){
-                Log.d(TAG, "SplashScreen: NavigateToHome")
-                viewModel.onEvent(SplashUiEvent.OnUserLoggedIn)
-            }else{
-                OnBoarding(){
+
+                OnBoarding(
+                    modifier = modifier.padding(it)
+                ){
                     viewModel.onEvent(SplashUiEvent.OnGetStartedClicked)
                     Log.d(TAG, "SplashScreen: OnGetStartedClicked")
                 }
-            }
+
         }
     }
 

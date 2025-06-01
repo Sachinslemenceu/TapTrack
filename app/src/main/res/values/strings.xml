@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">TapTrack</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="register_here">Register here</string>
+    <string name="app_version">App version 1.0.1</string>
+    <string name="register">Lets Register your Identity</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register_btn">Register</string>
+    <string name="password_rules">Your password must be at least 8 characters and include a mix of letters, numbers, and symbols.</string>
 </resources>

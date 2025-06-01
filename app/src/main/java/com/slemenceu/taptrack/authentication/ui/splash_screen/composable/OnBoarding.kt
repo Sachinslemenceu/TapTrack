@@ -40,7 +40,7 @@ fun OnBoarding(
             .fillMaxSize()
             .background(violet10)
     ){
-        Canvas(modifier = modifier.fillMaxSize().zIndex(0f)) {
+        Canvas(modifier = Modifier.fillMaxSize().zIndex(0f)) {
             drawCircle(
                 color = pink10,
                 center = Offset(x = size.center.x/4, y = size.center.y),
@@ -50,13 +50,13 @@ fun OnBoarding(
         Image(
             painter = painterResource(R.drawable.mouse_img),
             contentDescription = "mouse",
-            modifier = modifier
+            modifier = Modifier
                 .defaultMinSize(200.dp)
                 .padding(60.dp)
                 .align(Alignment.Center)
         )
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(30.dp)
                 .zIndex(1f),
@@ -73,7 +73,7 @@ fun OnBoarding(
                 color = Color.White
             )
             MyButton(
-                modifier = modifier.padding(bottom = 30.dp),
+                modifier = Modifier.padding(bottom = 30.dp),
                 text = "Get Started"
             ) {
                 onGetStartedClicked()

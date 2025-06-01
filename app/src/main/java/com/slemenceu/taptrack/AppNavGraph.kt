@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.slemenceu.taptrack.authentication.ui.HomeScreen
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginScreen
+import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterScreen
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashScreen
 import kotlinx.serialization.Serializable
 
@@ -29,10 +30,17 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
             )
         }
         composable<LoginScreen> {
-            LoginScreen(modifier = modifier)
+            LoginScreen(
+                modifier = modifier,
+                onNavigateToHome = { navController.navigate(HomeScreen) },
+                onNavigateToRegister = { navController.navigate(RegisterScreen) }
+            )
         }
         composable<HomeScreen> {
             HomeScreen(modifier = modifier)
+        }
+        composable<RegisterScreen> {
+            RegisterScreen(modifier = modifier, onNavigateToHome = {navController.navigate(HomeScreen)})
         }
     }
 
@@ -44,4 +52,6 @@ object SplashScreen
 object LoginScreen
 @Serializable
 object HomeScreen
+@Serializable
+object RegisterScreen
 
