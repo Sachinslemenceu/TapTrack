@@ -12,7 +12,8 @@ Control your computer remotely using your phone with a smooth and intuitive inte
 - **User Authentication** with Firebase Authentication (Email/Password)
 - **Home Page** UI ready with core mouse control functionality (work in progress)
 - **Login Session Persistence** using **Preference DataStore**
-- Built with **MVVM** pattern and **Clean Architecture** for modular, testable code
+- **Inbuild Wifi connection management** using **Android System Sevices**
+- Built with **MVVM** pattern and **Clean Architecture(Ui,Domain,Data layers)** for modular, testable code
 - Dependency Injection with **Koin**
 
 ---
@@ -33,9 +34,4 @@ Control your computer remotely using your phone with a smooth and intuitive inte
 ## 🔜 Upcoming Features
 
 - Complete mouse control gestures (tap, scroll, right-click, drag)
-- Connection management (Wi-Fi, Bluetooth)
 - Settings and customization options
-- Improved UI and accessibility features
-- Offline and error handling improvements
-
----
