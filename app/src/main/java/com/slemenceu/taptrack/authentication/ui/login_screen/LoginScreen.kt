@@ -49,17 +49,25 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnEmailChanged
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnPasswordChanged
+import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashUiEffect
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyButton
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyTextField
+import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeUiEvent
+import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeUiState
 import com.slemenceu.taptrack.ui.theme.alegreya
 import com.slemenceu.taptrack.ui.theme.overTheRainbow
 import com.slemenceu.taptrack.ui.theme.violet10
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = koinViewModel(),
+    uiState: LoginUiState,
+    onEvent: (LoginUiEvent) -> Unit,
+    uiEffect: SharedFlow<LoginUiEffect>,
     onNavigateToHome:() -> Unit,
     onNavigateToRegister:() -> Unit
 ) {
@@ -72,7 +80,7 @@ fun LoginScreen(
     )
     val TAG = "LoginScreen"
     LaunchedEffect(Unit) {
-        viewModel.uiEffect.collect {
+        uiEffect.collect {
             when (it) {
                 is LoginUiEffect.NavigateToHome -> {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
@@ -93,7 +101,6 @@ fun LoginScreen(
     Scaffold(
         containerColor = violet10
     ) {
-        val uiState = viewModel.uiState.collectAsState().value
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -121,7 +128,7 @@ fun LoginScreen(
                 Spacer(Modifier.height(40.dp))
                 MyTextField(
                     value = uiState.email,
-                    onValueChange = { viewModel.onEvent(OnEmailChanged(it)) },
+                    onValueChange = { onEvent(OnEmailChanged(it)) },
                     placeholder = stringResource(R.string.email),
                     containerColor = Color.White,
                     contentColor = Color.Black,
@@ -132,7 +139,7 @@ fun LoginScreen(
                 Spacer(Modifier.height(20.dp))
                 MyTextField(
                     value = uiState.password,
-                    onValueChange = { viewModel.onEvent(OnPasswordChanged(it)) },
+                    onValueChange = { onEvent(OnPasswordChanged(it)) },
                     placeholder = stringResource(R.string.password),
                     containerColor = Color.White,
                     contentColor = Color.Black,
@@ -143,7 +150,7 @@ fun LoginScreen(
                 MyButton(
                     text = stringResource(R.string.login),
                     modifier = Modifier.padding(horizontal = 40.dp),
-                    onClick = { viewModel.onEvent(LoginUiEvent.OnLoginClicked) }
+                    onClick = { onEvent(LoginUiEvent.OnLoginClicked) }
                 )
                 Spacer(Modifier.height(40.dp))
                 Row {
@@ -158,7 +165,7 @@ fun LoginScreen(
                         modifier = Modifier.clickable(
                             onClick = {
                                 Log.d(TAG,"Register button clicked")
-                                viewModel.onEvent(LoginUiEvent.OnRegisterClicked)
+                                onEvent(LoginUiEvent.OnRegisterClicked)
                             }
                         )
 
@@ -204,8 +211,15 @@ fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview(modifier: Modifier = Modifier) {
+fun LoginScreenPreview() {
     LoginScreen(
+        uiState = LoginUiState(
+            email = "Sachin",
+            password = "password",
+            isLoading = false
+        ),
+        onEvent = {},
+        uiEffect = MutableSharedFlow(),
         onNavigateToHome = {},
         onNavigateToRegister = {}
     )

@@ -32,19 +32,23 @@ import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyButto
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyTextField
 import com.slemenceu.taptrack.ui.theme.alegreya
 import com.slemenceu.taptrack.ui.theme.darkViolet
-import org.koin.androidx.compose.koinViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
-    viewModel: RegisterViewModel = koinViewModel(),
+    uiState: RegisterUiState,
+    onEvent: (RegisterUiEvent) -> Unit,
+    uiEffect: SharedFlow<RegisterUiEffect>,
     onNavigateToHome:() -> Unit
 ) {
-    val uiState = viewModel.uiState.collectAsState().value
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.uiEffect.collect {
+        uiEffect.collect {
             when (it) {
                 RegisterUiEffect.NavigateToHome -> {
                     onNavigateToHome()
@@ -78,7 +82,7 @@ fun RegisterScreen(
         Spacer(Modifier.height(40.dp))
         MyTextField(
             value = uiState.email,
-            onValueChange = { viewModel.onEvent(RegisterUiEvent.OnEmailChanged(it)) },
+            onValueChange = { onEvent(RegisterUiEvent.OnEmailChanged(it)) },
             placeholder = stringResource(R.string.email),
             containerColor = Color.White,
             contentColor = Color.Black,
@@ -89,7 +93,7 @@ fun RegisterScreen(
         Spacer(Modifier.height(20.dp))
         MyTextField(
             value = uiState.password,
-            onValueChange = { viewModel.onEvent(RegisterUiEvent.OnPasswordChanged(it)) },
+            onValueChange = { onEvent(RegisterUiEvent.OnPasswordChanged(it)) },
             placeholder = stringResource(R.string.password),
             containerColor = Color.White,
             contentColor = Color.Black,
@@ -99,7 +103,7 @@ fun RegisterScreen(
         Spacer(Modifier.height(20.dp))
         MyTextField(
             value = uiState.confirmPassword,
-            onValueChange = { viewModel.onEvent(RegisterUiEvent.OnConfirmPasswordChanged(it)) },
+            onValueChange = { onEvent(RegisterUiEvent.OnConfirmPasswordChanged(it)) },
             placeholder = stringResource(R.string.confirm_password),
             containerColor = Color.White,
             contentColor = Color.Black,
@@ -119,7 +123,7 @@ fun RegisterScreen(
         MyButton(
             text = stringResource(R.string.register_btn),
             modifier = Modifier.padding(horizontal = 40.dp),
-            onClick = { viewModel.onEvent(RegisterUiEvent.OnRegisterClicked) }
+            onClick = { onEvent(RegisterUiEvent.OnRegisterClicked) }
         )
         Spacer(Modifier.weight(1f))
 
@@ -128,8 +132,15 @@ fun RegisterScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun RegisterScreenPreview(modifier: Modifier = Modifier) {
+fun RegisterScreenPreview() {
     RegisterScreen(
-        onNavigateToHome = {}
+        onNavigateToHome = {},
+        uiState = RegisterUiState(
+            email = "Sachin",
+            password = "password",
+            confirmPassword = "confirmPassword"
+        ),
+        onEvent = {},
+        uiEffect = MutableSharedFlow(),
     )
 }

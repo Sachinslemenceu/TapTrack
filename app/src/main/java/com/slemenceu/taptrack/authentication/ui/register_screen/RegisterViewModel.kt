@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.slemenceu.taptrack.authentication.data.AuthService
 import com.slemenceu.taptrack.authentication.data.AuthStatus
+import com.slemenceu.taptrack.authentication.domain.AuthRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -11,8 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class RegisterViewModel(
-    private val authService: AuthService,
-    private val authStatus: AuthStatus
+    private val authRepo: AuthRepository,
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
@@ -46,7 +46,7 @@ class RegisterViewModel(
                     } else {
                         val result = register(uiState.value.email, uiState.value.password)
                         if (result) {
-                            authStatus.saveAuthStatus(isLoggedIn = true)
+                            authRepo.saveAuthStatus(isLoggedIn = true)
                             emitEffect(RegisterUiEffect.NavigateToHome)
                         } else {
                             emitEffect(RegisterUiEffect.PasswordUnmatched)
@@ -58,7 +58,7 @@ class RegisterViewModel(
         }
     }
     private suspend fun register(email: String, password: String): Boolean {
-        val result = authService.register(email, password)
+        val result = authRepo.register(email, password)
         _uiState.value = _uiState.value.copy(isLoading = false)
         return result
     }

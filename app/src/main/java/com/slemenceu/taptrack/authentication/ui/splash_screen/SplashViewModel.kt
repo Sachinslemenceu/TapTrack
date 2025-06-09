@@ -3,6 +3,7 @@ package com.slemenceu.taptrack.authentication.ui.splash_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.slemenceu.taptrack.authentication.data.AuthStatus
+import com.slemenceu.taptrack.authentication.domain.AuthRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SplashViewModel(
-    val authStatusRepo: AuthStatus
+    private val authRepo: AuthRepository,
 ): ViewModel() {
 
     private val isLoggedIn = MutableStateFlow<Boolean?>(null)
@@ -58,7 +59,7 @@ class SplashViewModel(
     }
     private fun checkAuthStatus(){
         viewModelScope.launch {
-            authStatusRepo.readAuthStatus().collectLatest{
+            authRepo.readAuthStatus().collectLatest{
                 isLoggedIn.value = it
             }
         }
