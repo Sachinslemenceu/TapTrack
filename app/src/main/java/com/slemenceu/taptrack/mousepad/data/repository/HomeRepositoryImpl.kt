@@ -5,6 +5,7 @@ import android.net.wifi.WifiManager
 import com.slemenceu.taptrack.core.utils.PermissionManager
 import com.slemenceu.taptrack.mousepad.data.services.WifiService
 import com.slemenceu.taptrack.mousepad.domain.HomeRepository
+import java.net.DatagramSocket
 
 class HomeRepositoryImpl(
     private val wifiService: WifiService
@@ -23,6 +24,5 @@ class HomeRepositoryImpl(
     override fun getInitialSsid(): String? {
         return wifiService.getInitialSsid()
     }
-
 
 }

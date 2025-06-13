@@ -3,8 +3,8 @@ package com.slemenceu.taptrack.mousepad.ui.home_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.slemenceu.taptrack.authentication.data.AuthStatus
-import com.slemenceu.taptrack.mousepad.data.services.WifiService
 import com.slemenceu.taptrack.mousepad.domain.HomeRepository
+import com.slemenceu.taptrack.mousepad.domain.MouseRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val authStatus: AuthStatus,
     private val repository: HomeRepository,
+    private val mouseRepository: MouseRepository
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -37,6 +38,20 @@ class HomeViewModel(
             HomeUiEvent.stopWifiTrackingEvent -> stopTracking()
             HomeUiEvent.loadInitialWifiInfo -> loadInitialWifiInfo()
             is HomeUiEvent.onPermissionResult -> onPermissionResult(event.result)
+            HomeUiEvent.onNavigateToMousepad -> {
+                viewModelScope.launch {
+                    sendEffect(HomeUiEffect.NavigateToMousepad)
+                }
+            }
+
+            is HomeUiEvent.onConnectToMousepad -> viewModelScope.launch {
+                val connected = connectToMousepad(event.passcode)
+                _uiState.value = _uiState.value.copy(
+                    mousepad = _uiState.value.mousepad.copy(
+                        isConnected = connected
+                    )
+                )
+            }
         }
     }
 
@@ -70,6 +85,9 @@ class HomeViewModel(
             )
         }
     }
+    private suspend fun connectToMousepad(passcode: Int): Boolean {
+        return mouseRepository.connectToMousepad(passcode)
+    }
 
     private fun stopTracking() {
         repository.stopWifiTracking()
@@ -92,6 +110,7 @@ class HomeViewModel(
             isConnected = isConnected
         )
     }
+
 
 
 }

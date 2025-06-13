@@ -5,5 +5,4 @@ interface HomeRepository {
     fun stopWifiTracking()
     fun openWifiSettings()
     fun getInitialSsid(): String?
-
 }

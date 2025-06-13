@@ -8,8 +8,10 @@ import com.slemenceu.taptrack.authentication.ui.login_screen.LoginViewModel
 import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterViewModel
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
 import com.slemenceu.taptrack.mousepad.data.repository.HomeRepositoryImpl
+import com.slemenceu.taptrack.mousepad.data.repository.MouseRepositoryImpl
 import com.slemenceu.taptrack.mousepad.data.services.WifiService
 import com.slemenceu.taptrack.mousepad.domain.HomeRepository
+import com.slemenceu.taptrack.mousepad.domain.MouseRepository
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
 import org.koin.dsl.module
 
@@ -19,9 +21,10 @@ val appModule = module {
     single { AuthService() }
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<HomeRepository> { HomeRepositoryImpl(get()) }
+    single<MouseRepository> { MouseRepositoryImpl() }
 
     single { SplashViewModel(get()) }
-    single { HomeViewModel(get(), get()) }
+    single { HomeViewModel(get(), get(),get()) }
     single { LoginViewModel(get()) }
     single { RegisterViewModel(get()) }
     single { WifiService(get()) }

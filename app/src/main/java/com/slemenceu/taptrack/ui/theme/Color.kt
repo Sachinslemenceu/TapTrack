@@ -13,6 +13,7 @@ val Pink40 = Color(0xFF7D5260)
 
 val violet10 = Color(0xFFAEAFF7)
 val violet20 = Color(0xFF957291)
-val pink10 = Color(0xFFFCDDEC)
+val mediumViolet = Color(0xFF504E89)
 val darkViolet = Color(0xFF371B34)
+val pink10 = Color(0xFFFCDDEC)
 val darkGrey = Color(0xFF424242)

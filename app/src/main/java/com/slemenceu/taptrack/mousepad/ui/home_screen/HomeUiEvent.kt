@@ -6,5 +6,8 @@ sealed class HomeUiEvent {
     object startWifiTrackingEvent: HomeUiEvent()
     object stopWifiTrackingEvent: HomeUiEvent()
     object loadInitialWifiInfo: HomeUiEvent()
+    object onNavigateToMousepad: HomeUiEvent()
+    data class onConnectToMousepad(val passcode: Int): HomeUiEvent()
     data class onPermissionResult(val result: Map<String, Boolean>) : HomeUiEvent()
+
 }

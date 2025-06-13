@@ -14,6 +14,7 @@ import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterViewMode
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashScreen
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
+import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseScreen
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -57,6 +58,7 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
                 navigateToLogin = { navController.navigate(LoginScreen) },
+                navigateToMousepad = { navController.navigate(MouseScreen) }
             )
         }
         composable<RegisterScreen> {
@@ -68,6 +70,9 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 uiEffect = viewModel.uiEffect,
                 onNavigateToHome = {navController.navigate(HomeScreen) }
             )
+        }
+        composable<MouseScreen> {
+            MouseScreen()
         }
     }
 
@@ -81,4 +86,6 @@ object LoginScreen
 object HomeScreen
 @Serializable
 object RegisterScreen
+@Serializable
+object MouseScreen
 
