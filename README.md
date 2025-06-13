@@ -8,12 +8,16 @@
 
 ## 🚀 Demo Example
 
-![Screenshot 2025-06-13 190302](https://github.com/user-attachments/assets/ff6a5c55-d694-4ce0-ba2b-c1c4d8d28845)
-![Screenshot 2025-06-13 190324](https://github.com/user-attachments/assets/c7a8acaf-b0a3-4c97-82a0-d7fcd6558224)
-![Screenshot 2025-06-13 190337](https://github.com/user-attachments/assets/e3647a7d-70e0-4234-b3b1-91ca32e92423)
-![Screenshot 2025-06-13 190357](https://github.com/user-attachments/assets/0599c740-9d00-4010-b245-b922362919a2)
+- Demo Screen Shots
+![Screenshot_2025-06-13-19-41-10-363_com slemenceu taptrack](https://github.com/user-attachments/assets/ac1fbf9a-27f0-4117-93e2-69f8ac17af1d)
+![Screenshot_2025-06-13-19-33-25-110_com slemenceu taptrack](https://github.com/user-attachments/assets/4ca384e7-8fb0-4ab1-b303-719a611081e0)
+![Screenshot_2025-06-13-19-33-27-662_com slemenceu taptrack](https://github.com/user-attachments/assets/9344bfea-3f82-45d5-afc6-1acff3039747)
+![Screenshot_2025-06-13-19-33-06-646_com slemenceu taptrack](https://github.com/user-attachments/assets/84cbd71b-8d18-4256-a497-bbb6a6d00c04)
 
-https://github.com/user-attachments/assets/238a902d-a22f-4002-b4bb-6548addaad9c
+- Demo Video
+
+https://github.com/user-attachments/assets/22a617ac-5131-42dc-a94e-1f80eeea9270
+
 
 ---
 ## 🚀 Features Implemented
@@ -33,6 +37,7 @@ https://github.com/user-attachments/assets/238a902d-a22f-4002-b4bb-6548addaad9c
 
 ✅ **Socket Management**  
 - Uses **Datagram packets** to send user inputs to the PC Server.
+- Developed a **custom Protocol** that minimize the latency.
 - Uses **Manual int to Byte Conversions** to **optimize delays** while sending packets via UDP.
 - Lifecycle-aware socket connection: socket auto-closes when view is destroyed or app exits.
 
