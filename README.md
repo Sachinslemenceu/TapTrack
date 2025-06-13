@@ -9,10 +9,13 @@
 ## 🚀 Demo Example
 
 - Demo Screen Shots
-![Screenshot_2025-06-13-19-41-10-363_com slemenceu taptrack](https://github.com/user-attachments/assets/ac1fbf9a-27f0-4117-93e2-69f8ac17af1d)
-![Screenshot_2025-06-13-19-33-25-110_com slemenceu taptrack](https://github.com/user-attachments/assets/4ca384e7-8fb0-4ab1-b303-719a611081e0)
-![Screenshot_2025-06-13-19-33-27-662_com slemenceu taptrack](https://github.com/user-attachments/assets/9344bfea-3f82-45d5-afc6-1acff3039747)
-![Screenshot_2025-06-13-19-33-06-646_com slemenceu taptrack](https://github.com/user-attachments/assets/84cbd71b-8d18-4256-a497-bbb6a6d00c04)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ac1fbf9a-27f0-4117-93e2-69f8ac17af1d" width="22%" />
+  <img src="https://github.com/user-attachments/assets/4ca384e7-8fb0-4ab1-b303-719a611081e0" width="22%" />
+  <img src="https://github.com/user-attachments/assets/9344bfea-3f82-45d5-afc6-1acff3039747" width="22%" />
+  <img src="https://github.com/user-attachments/assets/84cbd71b-8d18-4256-a497-bbb6a6d00c04" width="22%" />
+</p>
 
 - Demo Video
 
