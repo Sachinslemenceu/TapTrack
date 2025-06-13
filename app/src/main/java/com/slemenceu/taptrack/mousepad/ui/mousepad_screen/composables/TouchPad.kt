@@ -1,5 +1,4 @@
 
-
 package com.slemenceu.taptrack.mousepad.ui.mousepad_screen.composables
 
 import android.util.Log
@@ -12,29 +11,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import kotlinx.coroutines.*
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
-import java.nio.ByteBuffer
+import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseUiEvent
 
 
 
 @Composable
 fun TouchPad(
-    ip: String,
-    port: Int
+    onEvent: (MouseUiEvent) -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    var socket by remember { mutableStateOf<DatagramSocket?>(null) }
-
-    DisposableEffect(Unit) {
-        socket = DatagramSocket()
-        onDispose {
-            socket?.close()
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -61,33 +45,26 @@ fun TouchPad(
                             if (distance > 16) { // 4px movement threshold
                                 moved = true
                                 lastPos = currentPos
-
-                                coroutineScope.launch {
-                                    try {
-                                        socket?.let {
-                                            sendMouseMove(ip, port, dx, dy, it)
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.e("TouchPad", "Mouse move failed: ${e.message}")
-                                    }
+                                try {
+                                    onEvent(MouseUiEvent.SendMouseMove(dx, dy))
+                                    Log.d("TouchPad", "Mouse move: dx=$dx, dy=$dy")
+                                } catch (e: Exception) {
+                                    Log.e("TouchPad", "Mouse move failed: ${e.message}")
                                 }
                             }
+
                         }
 
                         val duration = System.currentTimeMillis() - startTime
                         if (!moved) {
-                            coroutineScope.launch {
-                                try {
-                                    socket?.let {
-                                        if (duration >= 500) {
-                                            sendClick(ip, port, rightClick = true, it)
-                                        } else {
-                                            sendClick(ip, port, rightClick = false, it)
-                                        }
-                                    }
-                                } catch (e: Exception) {
-                                    Log.e("TouchPad", "Click send failed: ${e.message}")
+                            try {
+                                if (duration >= 500) {
+                                    onEvent(MouseUiEvent.SendClick(rightClick = true))
+                                } else {
+                                    onEvent(MouseUiEvent.SendClick(rightClick = false))
                                 }
+                            } catch (e: Exception) {
+                                Log.e("TouchPad", "Click send failed: ${e.message}")
                             }
                         }
                     }
@@ -97,24 +74,3 @@ fun TouchPad(
 }
 
 
-suspend fun sendMouseMove(ip: String, port: Int, dx: Int, dy: Int, socket: DatagramSocket) {
-    val buffer = ByteBuffer.allocate(9)
-    buffer.put(0) // Command type: 0 = move
-    buffer.putInt(dx)
-    buffer.putInt(dy)
-
-    val packet = DatagramPacket(buffer.array(), buffer.array().size, InetAddress.getByName(ip), port)
-    withContext(Dispatchers.IO) {
-        socket.send(packet)
-    }
-}
-
-suspend fun sendClick(ip: String, port: Int, rightClick: Boolean, socket: DatagramSocket) {
-    val buffer = ByteBuffer.allocate(1)
-    buffer.put(if (rightClick) 2 else 1) // 1 = left click, 2 = right click
-
-    val packet = DatagramPacket(buffer.array(), buffer.array().size, InetAddress.getByName(ip), port)
-    withContext(Dispatchers.IO) {
-        socket.send(packet)
-    }
-}

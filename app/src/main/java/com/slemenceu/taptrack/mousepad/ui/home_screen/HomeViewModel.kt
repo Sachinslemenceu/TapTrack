@@ -48,7 +48,8 @@ class HomeViewModel(
                 val connected = connectToMousepad(event.passcode)
                 _uiState.value = _uiState.value.copy(
                     mousepad = _uiState.value.mousepad.copy(
-                        isConnected = connected
+                        isConnected = connected,
+                        passcode = event.passcode
                     )
                 )
             }

@@ -15,16 +15,20 @@ import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashScreen
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseScreen
+import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AppNavGraph(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val mouseViewModel = koinViewModel<MouseViewModel>()
+
     NavHost(
         navController = navController,
         startDestination = SplashScreen
     ) {
+
         composable<SplashScreen> {
             val viewModel = koinViewModel<SplashViewModel>()
             SplashScreen(
@@ -36,7 +40,10 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                     navController.navigate(LoginScreen)
                 },
                 onNavigateToHome = {
-                    navController.navigate(HomeScreen)
+                    navController.navigate(HomeScreen){
+                        popUpTo(SplashScreen) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -47,7 +54,11 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 uiState = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
-                onNavigateToHome = { navController.navigate(HomeScreen) },
+                onNavigateToHome = {
+                    navController.navigate(HomeScreen){
+                        popUpTo(SplashScreen) { inclusive = true }
+                        launchSingleTop = true
+                    } },
                 onNavigateToRegister = { navController.navigate(RegisterScreen) }
             )
         }
@@ -68,11 +79,18 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 uiState = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
-                onNavigateToHome = {navController.navigate(HomeScreen) }
+                onNavigateToHome = {
+                    navController.navigate(HomeScreen){
+                        popUpTo(SplashScreen) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
         composable<MouseScreen> {
-            MouseScreen()
+            MouseScreen(
+                onEvent = mouseViewModel::onEvent,
+            )
         }
     }
 

@@ -14,4 +14,5 @@ data class PermissionUiState(
 
 data class MousepadUiState(
     val isConnected: Boolean = false,
+    val passcode: Int = 0
 )

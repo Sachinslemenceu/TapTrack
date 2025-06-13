@@ -13,6 +13,7 @@ import com.slemenceu.taptrack.mousepad.data.services.WifiService
 import com.slemenceu.taptrack.mousepad.domain.HomeRepository
 import com.slemenceu.taptrack.mousepad.domain.MouseRepository
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
+import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
 import org.koin.dsl.module
 
 
@@ -28,4 +29,5 @@ val appModule = module {
     single { LoginViewModel(get()) }
     single { RegisterViewModel(get()) }
     single { WifiService(get()) }
+    single{ MouseViewModel(get()) }
 }
