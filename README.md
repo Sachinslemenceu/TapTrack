@@ -1,9 +1,16 @@
+
+
 # 🖱️ TapTrack
 
-**TapTrack** is an Android-based remote mouse control app built with **Kotlin**, following the **MVI** pattern and **Clean Architecture** principles. It allows users to seamlessly control their computer using their smartphone with an intuitive, responsive interface.
+**TapTrack** is an Android-based remote mouse control app built with **Kotlin**, following the **MVI** pattern and **Clean Architecture** principles. It allows users to seamlessly control their computer using their smartphone with an intuitive, responsive interface.It is optimized to have the minimum latency as possible. It uses **UDP Protocol** to connect to the Pc Server.The Pc Server code repo is attached at the end of the page.
 
 ---
 
+## 🚀 Demo Example
+
+https://github.com/user-attachments/assets/238a902d-a22f-4002-b4bb-6548addaad9c
+
+---
 ## 🚀 Features Implemented
 
 ✅ **Splash Screen**  
@@ -19,7 +26,12 @@
 - Fully designed home screen with real-time mousepad interaction area.
 - Gesture handling with **pointerInput** for touch tracking.
 
-✅ **Core Mouse Control (Work in Progress)**  
+✅ **Socket Management**  
+- Uses **Datagram packets** to send user inputs to the PC Server.
+- Uses **Manual int to Byte Conversions** to **optimize delays** while sending packets via UDP.
+- Lifecycle-aware socket connection: socket auto-closes when view is destroyed or app exits.
+
+✅ **Core Mouse Control**  
 - Cursor movement with finger gestures.
 - Optimized touch detection using `pointerInput` modifier for drag and tap responsiveness.
 
@@ -30,13 +42,7 @@
 - Integrated with Android system services to show current Wi-Fi status and prompt network connection if not connected.
 
 ✅ **Session-Aware Navigation**  
-- Automatically bypasses splash/login screens if session is active.
-
-✅ **Clean App Exit**  
-- Pressing the back button from Home exits the app instead of going to splash/login screen.
-
-✅ **Socket Management**  
-- Lifecycle-aware socket connection: socket auto-closes when view is destroyed or app exits.
+- Automatically bypasses splash/login screens if session is active using **Preference DataStore**.
 
 ✅ **MVI Architecture**  
 - Built using a scalable **Model-View-Intent** approach for unidirectional data flow and easier debugging.
@@ -49,14 +55,6 @@
 
 ✅ **Dependency Injection with Koin**  
 - Lightweight and lifecycle-aware DI setup for seamless component access.
-
-✅ **Pointer Tracking with Jetpack Compose**  
-- Leveraged `pointerInput` for custom drag and tap handling on the virtual touchpad.
-
-✅ **UI and UX Optimizations**  
-- Fixed navigation flow
-- Better gesture response tuning
-- Reworked screen transitions and back-stack logic
 
 ---
 
