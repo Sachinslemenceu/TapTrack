@@ -7,6 +7,10 @@
 ---
 
 ## 🚀 Demo Example
+![Screenshot 2025-06-13 190357](https://github.com/user-attachments/assets/0599c740-9d00-4010-b245-b922362919a2)
+![Screenshot 2025-06-13 190337](https://github.com/user-attachments/assets/e3647a7d-70e0-4234-b3b1-91ca32e92423)
+![Screenshot 2025-06-13 190324](https://github.com/user-attachments/assets/c7a8acaf-b0a3-4c97-82a0-d7fcd6558224)
+![Screenshot 2025-06-13 190302](https://github.com/user-attachments/assets/ff6a5c55-d694-4ce0-ba2b-c1c4d8d28845)
 
 https://github.com/user-attachments/assets/238a902d-a22f-4002-b4bb-6548addaad9c
 
@@ -14,7 +18,7 @@ https://github.com/user-attachments/assets/238a902d-a22f-4002-b4bb-6548addaad9c
 ## 🚀 Features Implemented
 
 ✅ **Splash Screen**  
-- Beautiful animations using [Lottie](https://airbnb.io/lottie/) for a modern and smooth user experience.
+- Animations using [Lottie](https://airbnb.io/lottie/) for a modern and smooth user experience.
 
 ✅ **User Authentication**  
 - Secure Email/Password login using **Firebase Authentication**.
@@ -33,7 +37,7 @@ https://github.com/user-attachments/assets/238a902d-a22f-4002-b4bb-6548addaad9c
 
 ✅ **Core Mouse Control**  
 - Cursor movement with finger gestures.
-- Optimized touch detection using `pointerInput` modifier for drag and tap responsiveness.
+- Optimized touch detection using the `pointerInput` modifier for drag and tap responsiveness.
 
 ✅ **Right-click, Drag, and Scroll Support (Partially Integrated)**  
 - Multitouch and long-press gesture experiments in progress.
@@ -66,6 +70,7 @@ https://github.com/user-attachments/assets/238a902d-a22f-4002-b4bb-6548addaad9c
 - **Preference DataStore**
 - **Koin** (Dependency Injection)
 - **MVI Architecture**
+- **Socket Programming (UDP Protocol)**
 - **Clean Architecture (UI + Domain + Data Layers)**
 - **Android System Services**
 - **Lottie Animations**
@@ -75,10 +80,7 @@ https://github.com/user-attachments/assets/238a902d-a22f-4002-b4bb-6548addaad9c
 
 ## 🧠 Contribution
 
-Currently a open source project, but contributors are welcome to find bugs and add changes.
-
----
-
+Currently an open-source project, but contributors are welcome to fork the repo and commit changes.
 
 ---
 
