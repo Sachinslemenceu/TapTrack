@@ -42,8 +42,12 @@ https://github.com/user-attachments/assets/22a617ac-5131-42dc-a94e-1f80eeea9270
 - Uses **Datagram packets** to send user inputs to the PC Server.
 - Developed a **custom Protocol** that minimize the latency.
 - Uses **Manual int to Byte Conversions** to **optimize delays** while sending packets via UDP.
-- Lifecycle-aware socket connection: socket auto-closes when view is destroyed or app exits.
+- Lifecycle-aware socket connection: socket auto-closes when the view is destroyed or the app exits.
 
+✅ **QR Code Scanner**  
+- Uses **ZXing Library** to implement QR Code Scanner.
+- It is used for a secure and convenient way to connect to the PC Server.
+- https://github.com/zxing/zxing
 ✅ **Core Mouse Control**  
 - Cursor movement with finger gestures.
 - Optimized touch detection using the `pointerInput` modifier for drag and tap responsiveness.
