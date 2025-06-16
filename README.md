@@ -48,6 +48,7 @@ https://github.com/user-attachments/assets/22a617ac-5131-42dc-a94e-1f80eeea9270
 - Uses **ZXing Library** to implement QR Code Scanner.
 - It is used for a secure and convenient way to connect to the PC Server.
 - https://github.com/zxing/zxing
+  
 ✅ **Core Mouse Control**  
 - Cursor movement with finger gestures.
 - Optimized touch detection using the `pointerInput` modifier for drag and tap responsiveness.
