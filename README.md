@@ -4,6 +4,14 @@
 
 **TapTrack** is an Android-based remote mouse control app built with **Kotlin**, following the **MVI** pattern and **Clean Architecture** principles. It allows users to seamlessly control their computer using their smartphone with an intuitive, responsive interface.It is optimized to have the minimum latency as possible. It uses **UDP Protocol** to connect to the Pc Server.The Pc Server code repo is attached at the end of the page.
 
+## 📂 Companion Desktop App
+
+This mobile application pairs with the official TapTrack PC client:
+
+👉 [**TapTrack PC**](https://github.com/Sachinslemenceu/TapTrack-PC.git)  
+A Kotlin Multiplatform Desktop app that listens for connections via UDP and displays real-time data about connected devices.
+
+Make sure to have the PC client running on the same local network for seamless discovery and interaction.
 ---
 
 ## 🚀 Demo Example
@@ -111,7 +119,7 @@ Built with ❤️ by **Sachin Pradeep Singh**
 
 ## 📄 License
 
-MIT License (Will be updated if changed)
+MIT License
 
 ---
 
