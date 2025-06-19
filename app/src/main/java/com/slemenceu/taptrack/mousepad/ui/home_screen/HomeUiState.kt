@@ -10,9 +10,9 @@ data class PermissionUiState(
     val allPermissionGranted: Boolean = false,
     val isLocationGranted: Boolean = false,
     val isWifiStateGranted: Boolean = false,
+    val isCameraGranted: Boolean = false
 )
 
 data class MousepadUiState(
     val isConnected: Boolean = false,
-    val passcode: Int = 0
 )

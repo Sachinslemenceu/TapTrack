@@ -9,9 +9,11 @@ import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterViewMode
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
 import com.slemenceu.taptrack.mousepad.data.repository.HomeRepositoryImpl
 import com.slemenceu.taptrack.mousepad.data.repository.MouseRepositoryImpl
+import com.slemenceu.taptrack.mousepad.data.repository.QRScannerRepoImpl
 import com.slemenceu.taptrack.mousepad.data.services.WifiService
 import com.slemenceu.taptrack.mousepad.domain.HomeRepository
 import com.slemenceu.taptrack.mousepad.domain.MouseRepository
+import com.slemenceu.taptrack.mousepad.domain.QRScannerRepo
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
 import org.koin.dsl.module
@@ -23,9 +25,9 @@ val appModule = module {
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<HomeRepository> { HomeRepositoryImpl(get()) }
     single<MouseRepository> { MouseRepositoryImpl() }
-
+    single<QRScannerRepo> { QRScannerRepoImpl() }
     single { SplashViewModel(get()) }
-    single { HomeViewModel(get(), get(),get()) }
+    single { HomeViewModel(get(), get(),get(),get()) }
     single { LoginViewModel(get()) }
     single { RegisterViewModel(get()) }
     single { WifiService(get()) }

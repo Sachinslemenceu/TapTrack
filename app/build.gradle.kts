@@ -77,6 +77,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-base:18.4.0")
 //    google fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:<version>")
+    // ZXing embedded scanner (camera scanner)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
 
 }

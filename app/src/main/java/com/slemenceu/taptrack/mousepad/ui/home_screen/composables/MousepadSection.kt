@@ -27,14 +27,12 @@ import com.slemenceu.taptrack.ui.theme.mediumViolet
 
 @Composable
 fun MousepadSection(
-    modifier: Modifier = Modifier,
     isConnected: Boolean,
     onNavigateToMousepad: () -> Unit,
-    onConnectToMousepad: (Int) -> Unit
+    onConnectToMousepad: () -> Unit
 ) {
         val image = if (isConnected) R.drawable.connected_mouse_img else R.drawable.disconnected_mouse_img
         val text = if (isConnected) "Click the mouse to open the mousepad" else "Connect the TapTrack app to Pc"
-        var showDialog = remember { mutableStateOf(false) }
         Text(
             text = if (isConnected) "Connected" else "Disconnected",
             fontSize = 14.sp,
@@ -52,7 +50,7 @@ fun MousepadSection(
                     .clickable(
                         onClick = {
                             if(!isConnected){
-                                showDialog.value = true
+                                onConnectToMousepad()
                             } else{
                             onNavigateToMousepad()
                             }
@@ -67,17 +65,17 @@ fun MousepadSection(
             color = Color.Black,
             modifier = Modifier.padding(20.dp)
         )
-    OtpDialog(
-        showDialog = showDialog.value,
-        onDismiss = {
-            showDialog.value = false
-        },
-        onConfirm = {passcode ->
-            onConnectToMousepad(
-                passcode.toInt()
-            )
-        }
-    )
+//    OtpDialog(
+//        showDialog = showDialog.value,
+//        onDismiss = {
+//            showDialog.value = false
+//        },
+//        onConfirm = {passcode ->
+//            onConnectToMousepad(
+//                passcode.toInt()
+//            )
+//        }
+//    )
 }
 
 @Preview

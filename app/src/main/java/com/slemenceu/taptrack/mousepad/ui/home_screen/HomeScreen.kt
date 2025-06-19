@@ -1,6 +1,7 @@
 package com.slemenceu.taptrack.mousepad.ui.home_screen
 
 import android.Manifest
+import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.zxing.integration.android.IntentIntegrator
 import com.slemenceu.taptrack.core.utils.PermissionManager
 import com.slemenceu.taptrack.mousepad.ui.home_screen.composables.MousepadSection
 import com.slemenceu.taptrack.mousepad.ui.home_screen.composables.OtpDialog
@@ -44,11 +46,13 @@ fun HomeScreen(
     navigateToMousepad: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as Activity
     var showDialog = remember { mutableStateOf(false) }
     val permissions = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_WIFI_STATE
+        Manifest.permission.ACCESS_WIFI_STATE,
+        Manifest.permission.CAMERA,
     )
     val log = "HomeScreen"
     val permissionResultLauncher = rememberLauncherForActivityResult(
@@ -61,6 +65,18 @@ fun HomeScreen(
             }
         }
     )
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {result ->
+        val intentResult = IntentIntegrator.parseActivityResult(result.resultCode, result.data)
+        val scannedText = intentResult?.contents
+        if (scannedText != null){
+            onEvent(HomeUiEvent.onScannedResult(scannedText))
+        } else {
+            onEvent(HomeUiEvent.onScanCancelled)
+        }
+    }
 
     Scaffold(
         topBar = {TopAppBar(
@@ -85,6 +101,13 @@ fun HomeScreen(
                     }
 
                     HomeUiEffect.NavigateToMousepad -> navigateToMousepad()
+                    is HomeUiEffect.onQrScanClicked -> {
+                        launcher.launch(it.intent)
+                    }
+
+                    HomeUiEffect.onQrScanCancelled -> {
+                        Toast.makeText(context, "Scanning Cancelled", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -107,8 +130,8 @@ fun HomeScreen(
                 onNavigateToMousepad = {
                     onEvent(HomeUiEvent.onNavigateToMousepad)
                 },
-                onConnectToMousepad = {passcode->
-                    onEvent(HomeUiEvent.onConnectToMousepad(passcode))
+                onConnectToMousepad = {
+                    onEvent(HomeUiEvent.onOpenScanner(activity))
                 }
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 15.dp,horizontal = 20.dp))
@@ -134,13 +157,6 @@ fun HomeScreen(
                     }
                 )
         }
-        OtpDialog(
-            showDialog = showDialog.value,
-            onDismiss = { showDialog.value = false },
-            onConfirm = {
-
-            }
-        )
     }
 }
 

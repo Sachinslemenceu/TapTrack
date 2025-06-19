@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
@@ -30,7 +31,9 @@ fun SplashScreen(
     onGetStartedClicked: () -> Unit,
     onNavigateToHome: () -> Unit
 ) {
-    Scaffold {
+    Scaffold(
+        containerColor = Color.White
+    ) {
 
         val TAG = "SplashScreen"
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash_ani))
