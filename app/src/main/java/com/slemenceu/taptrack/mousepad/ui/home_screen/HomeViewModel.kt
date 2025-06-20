@@ -2,6 +2,7 @@ package com.slemenceu.taptrack.mousepad.ui.home_screen
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.slemenceu.taptrack.authentication.data.AuthStatus
@@ -53,6 +54,7 @@ class HomeViewModel(
                 sendEffect(onQrScanClicked(scannerIntent(event.activity)))
             }
             is HomeUiEvent.onScannedResult -> {
+                Log.d("HomeScreenLog", "onScannedResult: ${event.result}")
                 scannedResult(event.result)
             }
 
@@ -96,7 +98,10 @@ class HomeViewModel(
         }
     }
     private suspend fun connectToMousepad(passcode: Int): Boolean {
-        return mouseRepository.connectToMousepad(passcode)
+        Log.d("HomeScreenLog", "connecting to mousepad: $passcode")
+        val result = mouseRepository.connectToMousepad(passcode)
+        Log.d("HomeScreenLog", "result of connection: $result")
+        return result
     }
 
     private fun stopTracking() {

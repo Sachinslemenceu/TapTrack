@@ -62,7 +62,7 @@ fun BottomSheetContent(
         Spacer(Modifier.height(10.dp))
         SectionHeading(
             title = "Your Connection",
-            subtext = "Oops not yet connected",
+            subtext = if(isConnected) "Horaay! Connected to Pc." else "Oops not yet connected",
             modifier = Modifier.align(Alignment.Start)
         )
         Spacer(Modifier.weight(1f))

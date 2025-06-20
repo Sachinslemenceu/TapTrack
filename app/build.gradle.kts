@@ -68,6 +68,8 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
+
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
     //Koin
     implementation("io.insert-koin:koin-androidx-compose:3.4.6")

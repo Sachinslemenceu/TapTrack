@@ -1,5 +1,6 @@
 package com.slemenceu.taptrack.mousepad.data.repository
 
+import android.util.Log
 import com.slemenceu.taptrack.mousepad.domain.MouseRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
@@ -14,7 +15,7 @@ import java.nio.ByteBuffer
 class MouseRepositoryImpl : MouseRepository {
 
     private val port = 9999
-    private val ip = "192.168.1.5"
+    private val ip = "192.168.1.4"
     private val address = InetAddress.getByName(ip)
 
     private val mutex = Mutex()
@@ -51,7 +52,6 @@ class MouseRepositoryImpl : MouseRepository {
             val confirmBuffer = ByteArray(1)
             val confirmPacket = DatagramPacket(confirmBuffer, confirmBuffer.size)
             socket?.receive(confirmPacket)
-
             val success = confirmBuffer[0] == Command.CONNECT_ACK
             if (success) {
                 isOtpAuthenticated = true

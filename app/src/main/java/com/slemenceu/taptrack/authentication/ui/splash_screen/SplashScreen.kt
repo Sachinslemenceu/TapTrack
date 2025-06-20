@@ -58,7 +58,6 @@ fun SplashScreen(
         }
         LaunchedEffect(progress) {
             if (progress == 1f) {
-                delay(2000)
                 onEvent(SplashUiEvent.OnAnimationDone)
             }
         }

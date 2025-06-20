@@ -1,11 +1,21 @@
 package com.slemenceu.taptrack
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginScreen
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginViewModel
 import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterScreen
@@ -26,10 +36,9 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = SplashScreen
+        startDestination = Splash,
     ) {
-
-        composable<SplashScreen> {
+        composable<Splash>() {
             val viewModel = koinViewModel<SplashViewModel>()
             SplashScreen(
                 modifier = modifier,
@@ -37,17 +46,17 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
                 onGetStartedClicked = {
-                    navController.navigate(LoginScreen)
+                    navController.navigate(Splash)
                 },
                 onNavigateToHome = {
-                    navController.navigate(HomeScreen){
-                        popUpTo(SplashScreen) { inclusive = true }
+                    navController.navigate(Home){
+                        popUpTo(Splash) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
             )
         }
-        composable<LoginScreen> {
+        composable<Login> {
             val viewModel = koinViewModel<LoginViewModel>()
             LoginScreen(
                 modifier = modifier,
@@ -55,24 +64,32 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
                 onNavigateToHome = {
-                    navController.navigate(HomeScreen){
-                        popUpTo(SplashScreen) { inclusive = true }
+                    navController.navigate(Home){
+                        popUpTo(Splash) { inclusive = true }
                         launchSingleTop = true
                     } },
-                onNavigateToRegister = { navController.navigate(RegisterScreen) }
+                onNavigateToRegister = { navController.navigate(Register) }
             )
         }
-        composable<HomeScreen> {
+        composable<Home>(
+            enterTransition = {
+                slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                animationSpec = tween(500)
+            ) +
+                    fadeIn(animationSpec = tween(500))
+            }
+        ) {
             val viewModel = koinViewModel<HomeViewModel>()
             HomeScreen(
                 uiState = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
-                navigateToLogin = { navController.navigate(LoginScreen) },
-                navigateToMousepad = { navController.navigate(MouseScreen) }
+                navigateToLogin = { navController.navigate(Login) },
+                navigateToMousepad = { navController.navigate(Mouse) }
             )
         }
-        composable<RegisterScreen> {
+        composable<Register> {
             val viewModel = koinViewModel< RegisterViewModel>()
             RegisterScreen(
                 modifier = modifier,
@@ -80,14 +97,14 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
                 onNavigateToHome = {
-                    navController.navigate(HomeScreen){
-                        popUpTo(SplashScreen) { inclusive = true }
+                    navController.navigate(Home){
+                        popUpTo(Splash) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
             )
         }
-        composable<MouseScreen> {
+        composable<Mouse> {
             MouseScreen(
                 onEvent = mouseViewModel::onEvent,
             )
@@ -96,14 +113,16 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
 
 }
 
+
 @Serializable
-object SplashScreen
+data object Splash
 @Serializable
-object LoginScreen
+data object Login
 @Serializable
-object HomeScreen
+data object Register
 @Serializable
-object RegisterScreen
+data object Home
 @Serializable
-object MouseScreen
+data object Mouse
+
 

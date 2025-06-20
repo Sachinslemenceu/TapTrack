@@ -92,6 +92,7 @@ fun HomeScreen(
         val scannedText = intentResult?.contents
         if (scannedText != null){
             onEvent(HomeUiEvent.onScannedResult(scannedText))
+            Log.d("HomeScreenLog",scannedText)
         } else {
             onEvent(HomeUiEvent.onScanCancelled)
         }

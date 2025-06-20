@@ -47,6 +47,7 @@ fun ConnectionSection(
 
     val text = if (isConnected) "Click to open the mousepad" else "Hold to sync with pc"
     val icon = if (isConnected) R.drawable.connected_mouse_img else R.drawable.cn_img
+    val connectionEstIcon = if (isConnected) R.drawable.connection_est_img else R.drawable.connection_nest_img
     val scale = remember { Animatable(1f) }
     val scope  =rememberCoroutineScope()
     Card(
@@ -121,8 +122,8 @@ fun ConnectionSection(
                 )
             }
             Image(
-                painter = painterResource(R.drawable.connection_nest_img),
-                contentDescription = "connection not established img",
+                painter = painterResource(connectionEstIcon),
+                contentDescription = "connection showing Icon",
                 modifier = Modifier
                     .height(150.dp)
                     .width(150.dp),
