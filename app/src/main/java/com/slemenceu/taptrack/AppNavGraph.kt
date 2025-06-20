@@ -6,13 +6,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeScreen
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginScreen
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginViewModel
 import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterScreen
 import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterViewModel
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashScreen
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
+import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeScreen
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseScreen
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
