@@ -40,7 +40,7 @@ class HomeViewModel(
             is HomeUiEvent.onPermissionResult -> onPermissionResult(event.result)
             HomeUiEvent.onNavigateToMousepad -> {
                 viewModelScope.launch {
-                    sendEffect(HomeUiEffect.NavigateToMousepad)
+                    sendEffect(NavigateToMousepad)
                 }
             }
 
@@ -60,6 +60,12 @@ class HomeViewModel(
             HomeUiEvent.onPcGuideClicked -> {
                 viewModelScope.launch {
                     sendEffect(NavigateToPcGuide)
+                }
+            }
+
+            HomeUiEvent.onOptionsClicked -> {
+                viewModelScope.launch {
+                    sendEffect(NavigateToOptions)
                 }
             }
         }

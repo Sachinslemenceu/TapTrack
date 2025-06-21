@@ -27,7 +27,8 @@ fun BottomSheetContent(
     isConnected: Boolean,
     onNavigateToMousepad: () -> Unit,
     onConnectToMousepad: () -> Unit,
-    onPcGuideClicked: () -> Unit
+    onPcGuideClicked: () -> Unit,
+    onOptionsClicked: () -> Unit
 ){
     Column(
         modifier = modifier
@@ -60,7 +61,9 @@ fun BottomSheetContent(
                 backgroundColor = lightBlue,
                 text = "Options",
                 icon = R.drawable.settings_icon,
-                onClick = {},
+                onClick = {
+                    onOptionsClicked()
+                },
                 modifier = Modifier.weight(1f)
             )
         }

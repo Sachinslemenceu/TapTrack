@@ -7,4 +7,6 @@ sealed class HomeUiEffect {
     class onQrScanClicked(val intent: Intent) : HomeUiEffect()
     object onQrScanCancelled : HomeUiEffect()
     object NavigateToPcGuide : HomeUiEffect()
+    object NavigateToOptions : HomeUiEffect()
+
 }

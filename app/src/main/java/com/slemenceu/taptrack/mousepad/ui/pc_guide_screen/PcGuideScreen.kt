@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.slemenceu.taptrack.R
+import com.slemenceu.taptrack.mousepad.ui.pc_guide_screen.composables.TopAppBar
 
 @Composable
 fun PcGuideScreen(
@@ -51,6 +52,7 @@ fun PcGuideScreen(
     Scaffold(
         containerColor = Color.White,
         topBar = { TopAppBar(
+            title = "Help",
             onBackClicked = {
                 onBackClicked()
             }
@@ -103,50 +105,6 @@ fun PcGuideScreen(
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TopAppBar(
-    onBackClicked: () -> Unit
-){
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = "Help",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-            )
-        },
-        navigationIcon = {
-            Card(
-                shape = RoundedCornerShape(10.dp),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 10.dp
-                ),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                ),
-                border = CardDefaults.outlinedCardBorder(
-                    enabled = true
-                ),
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .clickable {
-                        onBackClicked()
-                    }
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    modifier = Modifier.padding(10.dp)
-                )
-            }
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.White
-        )
-    )
-}
 
 @Composable
 private fun DetailsComponent(

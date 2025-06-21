@@ -28,6 +28,7 @@ import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeScreen
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseScreen
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
+import com.slemenceu.taptrack.mousepad.ui.options_screen.OptionsScreen
 import com.slemenceu.taptrack.mousepad.ui.pc_guide_screen.PcGuideScreen
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -92,14 +93,9 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 uiState = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
-                navigateToLogin = {
-                    navController.navigate(Login){
-                        popUpTo(Splash) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                                  },
                 navigateToMousepad = { navController.navigate(Mouse) },
-                navigateToPcGuide = { navController.navigate(PCGuide) }
+                navigateToPcGuide = { navController.navigate(PCGuide) },
+                navigateToOptions = { navController.navigate(Options) }
             )
         }
         composable<Register>(
@@ -154,6 +150,30 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 onBackClicked = { navController.popBackStack() }
             )
         }
+        composable<Options>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(500)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(500)
+                )
+            }
+        ) {
+            OptionsScreen(
+                onBackClicked = { navController.popBackStack() },
+                onNavigateToLogin = {
+                    navController.navigate(Login) {
+                        popUpTo(Splash) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
     }
 
 }
@@ -171,5 +191,7 @@ data object Home
 data object Mouse
 @Serializable
 data object PCGuide
+@Serializable
+data object Options
 
 

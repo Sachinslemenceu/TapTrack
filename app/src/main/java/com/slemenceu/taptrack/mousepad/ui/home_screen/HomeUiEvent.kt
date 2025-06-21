@@ -13,4 +13,5 @@ sealed class HomeUiEvent {
     data class onOpenScanner(val activity: Activity) : HomeUiEvent()
     object onScanCancelled: HomeUiEvent()
     object onPcGuideClicked: HomeUiEvent()
+    object onOptionsClicked: HomeUiEvent()
 }

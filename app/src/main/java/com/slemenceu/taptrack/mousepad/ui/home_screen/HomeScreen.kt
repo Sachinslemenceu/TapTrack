@@ -65,11 +65,11 @@ fun HomeScreen(
     onEvent: (HomeUiEvent) -> Unit,
     uiEffect: SharedFlow<HomeUiEffect>,
     navigateToMousepad: () -> Unit,
-    navigateToPcGuide: () -> Unit
+    navigateToPcGuide: () -> Unit,
+    navigateToOptions: () -> Unit
 ) {
     val context = LocalContext.current
     val activity = context as Activity
-    var showDialog = remember { mutableStateOf(false) }
     val permissions = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -152,6 +152,9 @@ fun HomeScreen(
                 },
                 onPcGuideClicked = {
                     onEvent(HomeUiEvent.onPcGuideClicked)
+                },
+                onOptionsClicked = {
+                    onEvent(HomeUiEvent.onOptionsClicked)
                 }
             )
         },
@@ -181,6 +184,7 @@ fun HomeScreen(
                     }
 
                     HomeUiEffect.NavigateToPcGuide -> navigateToPcGuide()
+                    HomeUiEffect.NavigateToOptions -> navigateToOptions()
                 }
             }
         }
@@ -245,24 +249,5 @@ fun HomeScreen(
             }
         }
     }
-    if (showDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
-                showDialog.value = false
-            },
-            title = { Text("Logout") },
-            text = { Text("Are you sure you want to logout?") },
-            confirmButton = {
-                OutlinedButton(
-                    onClick = {
-                        showDialog.value = false
-                    }
-                ) {
-                    Text("Yes",
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            }
-        )
-    }
+
 }
