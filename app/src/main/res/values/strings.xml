@@ -9,4 +9,11 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="register_btn">Register</string>
     <string name="password_rules">Your password must be at least 8 characters and include a mix of letters, numbers, and symbols.</string>
+    <string name="annoy_desc">Tired of dragging your finger across a stiff laptop touchpad? TapTrack brings freedom and comfort to your workflow.</string>
+    <string name="control_desc">Turn your smartphone into a wireless mouse and clicker. Glide, tap, and scroll—right from your fingertips.</string>
+    <string name="smooth_desc">Tired of dragging your finger across a stiff laptop touchpad? TapTrack brings freedom and comfort to your workflow.</string>
+    <string name="annoy_title">\"Say Goodbye to Clunky Trackpads\"</string>
+    <string name="control_title">\"Control Your PC with a Tap\"</string>
+    <string name="smooth_title">\"Smooth as a Swipe\"</string>
+    <string name="download_uri"><![CDATA[https://www.dropbox.com/scl/fi/bsz3m3980r3xm1x0k0s1v/TapTrack-1.0.0.exe?rlkey=nowk4g9tqf2yuwoj1h7zrzrr3&st=6lvwm0u4&dl=0]]></string>
 </resources>

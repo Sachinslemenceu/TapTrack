@@ -1,11 +1,13 @@
 package com.slemenceu.taptrack
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeScreen
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseScreen
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
+import com.slemenceu.taptrack.mousepad.ui.pc_guide_screen.PcGuideScreen
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 
@@ -45,8 +48,12 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 uiState = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
-                onGetStartedClicked = {
-                    navController.navigate(Splash)
+                onNavigateToLogin = {
+                    Log.d("AppNavGraph", "AppNavGraph: onGetStartedClicked")
+                    navController.navigate(Login){
+                        popUpTo(Splash) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToHome = {
                     navController.navigate(Home){
@@ -85,11 +92,30 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 uiState = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
                 uiEffect = viewModel.uiEffect,
-                navigateToLogin = { navController.navigate(Login) },
-                navigateToMousepad = { navController.navigate(Mouse) }
+                navigateToLogin = {
+                    navController.navigate(Login){
+                        popUpTo(Splash) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                                  },
+                navigateToMousepad = { navController.navigate(Mouse) },
+                navigateToPcGuide = { navController.navigate(PCGuide) }
             )
         }
-        composable<Register> {
+        composable<Register>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(500)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(500)
+                )
+            }
+        ) {
             val viewModel = koinViewModel< RegisterViewModel>()
             RegisterScreen(
                 modifier = modifier,
@@ -109,6 +135,25 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 onEvent = mouseViewModel::onEvent,
             )
         }
+        composable<PCGuide>(
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(500)
+                )
+            }
+            ,
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(500)
+                )
+            }
+        ) {
+            PcGuideScreen(
+                onBackClicked = { navController.popBackStack() }
+            )
+        }
     }
 
 }
@@ -124,5 +169,7 @@ data object Register
 data object Home
 @Serializable
 data object Mouse
+@Serializable
+data object PCGuide
 
 

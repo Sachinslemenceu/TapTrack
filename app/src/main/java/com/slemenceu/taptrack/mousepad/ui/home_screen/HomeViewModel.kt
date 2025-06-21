@@ -33,12 +33,6 @@ class HomeViewModel(
 
     fun onEvent(event: HomeUiEvent){
         when(event){
-            is HomeUiEvent.onLogOutClicked -> {
-                viewModelScope.launch {
-                    logout()
-                    sendEffect(HomeUiEffect.NavigateToLogin)
-                }
-            }
             HomeUiEvent.onOpenWifiSettings -> openWifiSettings()
             HomeUiEvent.startWifiTrackingEvent -> startTracking()
             HomeUiEvent.stopWifiTrackingEvent -> stopTracking()
@@ -61,6 +55,11 @@ class HomeViewModel(
             HomeUiEvent.onScanCancelled -> {
                 viewModelScope.launch {
                     sendEffect(onQrScanCancelled)
+                }
+            }
+            HomeUiEvent.onPcGuideClicked -> {
+                viewModelScope.launch {
+                    sendEffect(NavigateToPcGuide)
                 }
             }
         }

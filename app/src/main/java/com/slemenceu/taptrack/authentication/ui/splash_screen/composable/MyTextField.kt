@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.slemenceu.taptrack.ui.theme.darkGrey
 import com.slemenceu.taptrack.ui.theme.darkViolet
 import com.slemenceu.taptrack.ui.theme.violet10
 import com.slemenceu.taptrack.ui.theme.violet20
@@ -39,6 +40,8 @@ fun MyTextField(
             focusedBorderColor = darkViolet,
             unfocusedBorderColor = Color.Transparent,
             unfocusedTextColor = contentColor,
+            focusedTextColor = contentColor,
+            disabledTextColor = contentColor,
             unfocusedContainerColor = containerColor,
             focusedContainerColor = containerColor,
         ),

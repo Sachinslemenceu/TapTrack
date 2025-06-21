@@ -17,11 +17,14 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -61,8 +64,8 @@ fun HomeScreen(
     uiState: HomeUiState,
     onEvent: (HomeUiEvent) -> Unit,
     uiEffect: SharedFlow<HomeUiEffect>,
-    navigateToLogin: () -> Unit,
-    navigateToMousepad: () -> Unit
+    navigateToMousepad: () -> Unit,
+    navigateToPcGuide: () -> Unit
 ) {
     val context = LocalContext.current
     val activity = context as Activity
@@ -146,6 +149,9 @@ fun HomeScreen(
                 },
                 onConnectToMousepad = {
                     onEvent(HomeUiEvent.onOpenScanner(activity))
+                },
+                onPcGuideClicked = {
+                    onEvent(HomeUiEvent.onPcGuideClicked)
                 }
             )
         },
@@ -153,6 +159,7 @@ fun HomeScreen(
         sheetPeekHeight = peekHeight,
         containerColor = violet40,
         sheetContainerColor = Color.White,
+
     ) {
         LaunchedEffect(Unit) {
             if(!PermissionManager.isAllPermissionGranted(context)) {
@@ -163,10 +170,6 @@ fun HomeScreen(
             onEvent(HomeUiEvent.startWifiTrackingEvent)
             uiEffect.collect {
                 when (it) {
-                    is HomeUiEffect.NavigateToLogin -> {
-                        Toast.makeText(context, "Successfully nLogged out", Toast.LENGTH_SHORT).show()
-                        navigateToLogin()
-                    }
 
                     HomeUiEffect.NavigateToMousepad -> navigateToMousepad()
                     is HomeUiEffect.onQrScanClicked -> {
@@ -176,6 +179,8 @@ fun HomeScreen(
                     HomeUiEffect.onQrScanCancelled -> {
                         Toast.makeText(context, "Scanning Cancelled", Toast.LENGTH_SHORT).show()
                     }
+
+                    HomeUiEffect.NavigateToPcGuide -> navigateToPcGuide()
                 }
             }
         }
@@ -251,7 +256,6 @@ fun HomeScreen(
                 OutlinedButton(
                     onClick = {
                         showDialog.value = false
-                        onEvent(HomeUiEvent.onLogOutClicked)
                     }
                 ) {
                     Text("Yes",

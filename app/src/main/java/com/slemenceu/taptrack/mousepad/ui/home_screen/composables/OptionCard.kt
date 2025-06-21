@@ -37,6 +37,7 @@ fun OptionCard(
     modifier: Modifier = Modifier,
     backgroundColor: Color,
     text: String,
+    onClick: () -> Unit ,
     @DrawableRes icon: Int,
 ) {
     val scale = remember { Animatable(1f) }
@@ -53,6 +54,7 @@ fun OptionCard(
                     scope.launch {
                         scale.animateTo(0.9f, animationSpec = tween(90))
                         scale.animateTo(1f, animationSpec = tween(120))
+                        onClick()
                     }
 
                 }
@@ -91,12 +93,13 @@ fun OptionCard(
 
 @Preview(showBackground = true)
 @Composable
-fun OptionCardPreview() {
+private fun OptionCardPreview() {
     OptionCard(
         backgroundColor = violet20,
         text = "How to connect\n" +
                 "to PC ?",
         icon = R.drawable.pc_icon,
+        onClick = {}
     )
 
 }

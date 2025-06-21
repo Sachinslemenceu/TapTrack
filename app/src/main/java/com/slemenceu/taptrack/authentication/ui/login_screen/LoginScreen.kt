@@ -56,6 +56,8 @@ import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyTextF
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeUiEvent
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeUiState
 import com.slemenceu.taptrack.ui.theme.alegreya
+import com.slemenceu.taptrack.ui.theme.darkGrey
+import com.slemenceu.taptrack.ui.theme.lightGrey10
 import com.slemenceu.taptrack.ui.theme.overTheRainbow
 import com.slemenceu.taptrack.ui.theme.violet10
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -100,7 +102,7 @@ fun LoginScreen(
         }
     }
     Scaffold(
-        containerColor = violet10
+        containerColor = Color.White
     ) {
         Box(
             modifier = modifier
@@ -110,9 +112,9 @@ fun LoginScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(Modifier.height(40.dp))
+                Spacer(Modifier.weight(1f))
                 Image(
-                    painter = painterResource(R.drawable.top_table_img),
+                    painter = painterResource(R.drawable.login_img),
                     contentDescription = "Top table image",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -124,15 +126,15 @@ fun LoginScreen(
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Normal,
                     fontFamily = overTheRainbow,
-                    color = Color.White
+                    color = Color(0xFF7B5A30)
                 )
                 Spacer(Modifier.height(40.dp))
                 MyTextField(
                     value = uiState.email,
                     onValueChange = { onEvent(OnEmailChanged(it)) },
                     placeholder = stringResource(R.string.email),
-                    containerColor = Color.White,
-                    contentColor = Color.Black,
+                    containerColor = lightGrey10,
+                    contentColor = darkGrey,
                     modifier = Modifier.padding(horizontal = 30.dp),
                     trailingIcon = Icons.Outlined.Email
 
@@ -142,8 +144,8 @@ fun LoginScreen(
                     value = uiState.password,
                     onValueChange = { onEvent(OnPasswordChanged(it)) },
                     placeholder = stringResource(R.string.password),
-                    containerColor = Color.White,
-                    contentColor = Color.Black,
+                    containerColor = lightGrey10,
+                    contentColor = darkGrey,
                     modifier = Modifier.padding(horizontal = 30.dp),
                     trailingIcon = Icons.Outlined.Lock,
                 )
@@ -162,7 +164,7 @@ fun LoginScreen(
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Normal,
                         fontFamily = alegreya,
-                        color = Color.White,
+                        color = darkGrey,
                         modifier = Modifier.clickable(
                             onClick = {
                                 Log.d(TAG,"Register button clicked")
@@ -187,7 +189,7 @@ fun LoginScreen(
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Normal,
                     fontFamily = alegreya,
-                    color = Color.White,
+                    color = darkGrey,
 
                     )
                 Spacer(Modifier.weight(1f))

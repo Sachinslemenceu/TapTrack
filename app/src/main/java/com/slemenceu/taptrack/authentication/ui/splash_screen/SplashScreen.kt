@@ -18,6 +18,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.OnBoarding
+import com.slemenceu.taptrack.authentication.ui.splash_screen.onboarding.OnBoardingScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
@@ -28,7 +29,7 @@ fun SplashScreen(
     uiState: SplashUiState,
     onEvent: (SplashUiEvent) -> Unit,
     uiEffect: SharedFlow<SplashUiEffect>,
-    onGetStartedClicked: () -> Unit,
+    onNavigateToLogin: () -> Unit,
     onNavigateToHome: () -> Unit
 ) {
     Scaffold(
@@ -47,7 +48,7 @@ fun SplashScreen(
                 when (it) {
                     is SplashUiEffect.NavigateToLogin -> {
                         Log.d(TAG, "SplashScreen: NavigateToLogin")
-                        onGetStartedClicked()
+                        onNavigateToLogin()
                     }
                     SplashUiEffect.NavigateToHome -> {
                         Log.d(TAG, "SplashScreen: NavigateToHome")
@@ -76,14 +77,12 @@ fun SplashScreen(
             }
         }
         else {
-
-                OnBoarding(
-                    modifier = modifier.padding(it)
-                ){
-                    onEvent(SplashUiEvent.OnGetStartedClicked)
-                    Log.d(TAG, "SplashScreen: OnGetStartedClicked")
-                }
-
+            OnBoardingScreen(
+                modifier = modifier.padding(it)
+            ) {
+                onEvent(SplashUiEvent.OnGetStartedClicked)
+                Log.d(TAG, "SplashScreen: OnGetStartedClicked")
+            }
         }
     }
 

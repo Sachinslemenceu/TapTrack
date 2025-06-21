@@ -3,7 +3,6 @@ package com.slemenceu.taptrack.mousepad.ui.home_screen
 import android.app.Activity
 
 sealed class HomeUiEvent {
-    object onLogOutClicked : HomeUiEvent()
     object onOpenWifiSettings : HomeUiEvent()
     object startWifiTrackingEvent: HomeUiEvent()
     object stopWifiTrackingEvent: HomeUiEvent()
@@ -13,4 +12,5 @@ sealed class HomeUiEvent {
     data class onScannedResult(val result: String) : HomeUiEvent()
     data class onOpenScanner(val activity: Activity) : HomeUiEvent()
     object onScanCancelled: HomeUiEvent()
+    object onPcGuideClicked: HomeUiEvent()
 }

@@ -26,7 +26,8 @@ fun BottomSheetContent(
     expandedHeight: Dp,
     isConnected: Boolean,
     onNavigateToMousepad: () -> Unit,
-    onConnectToMousepad: () -> Unit
+    onConnectToMousepad: () -> Unit,
+    onPcGuideClicked: () -> Unit
 ){
     Column(
         modifier = modifier
@@ -50,12 +51,16 @@ fun BottomSheetContent(
                 text = "How to connect " +
                         "to PC ?",
                 icon = R.drawable.pc_icon,
+                onClick = {
+                    onPcGuideClicked()
+                },
                 modifier = Modifier.weight(1f)
             )
             OptionCard(
                 backgroundColor = lightBlue,
                 text = "Options",
                 icon = R.drawable.settings_icon,
+                onClick = {},
                 modifier = Modifier.weight(1f)
             )
         }
