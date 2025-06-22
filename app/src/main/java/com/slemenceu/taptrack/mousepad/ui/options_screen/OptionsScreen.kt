@@ -1,5 +1,6 @@
 package com.slemenceu.taptrack.mousepad.ui.options_screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +14,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,18 +27,40 @@ import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.mousepad.ui.options_screen.composables.OptionItem
 import com.slemenceu.taptrack.mousepad.ui.pc_guide_screen.composables.TopAppBar
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun OptionsScreen(
-    onBackClicked: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onEvent: (OptionsUiEvent) -> Unit,
+    uiEffect: SharedFlow<OptionsUiEffect>,
+    onNavigateToHome: () -> Unit,
+    onNavigateToLogin: () -> Unit,
 ) {
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        uiEffect.collect {effect ->
+            when(effect) {
+                OptionsUiEffect.NavigateToHome -> onNavigateToHome()
+                OptionsUiEffect.NavigateToLogin -> onNavigateToLogin()
+                OptionsUiEffect.ShowToast -> {
+                    Toast.makeText(context, "This feature is not available yet", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
                 title = "Options",
                 onBackClicked = {
-                    onBackClicked()
+                    onEvent(OptionsUiEvent.OnBackClicked)
                 }
             )
         },
@@ -57,7 +82,9 @@ fun OptionsScreen(
                 iconColor = Color.Black,
                 text = "Dark Mode",
                 isPreference = true,
-                onClick = {}
+                onClick = {
+                    onEvent(OptionsUiEvent.OnUnfinishedFeatureClicked)
+                }
             )
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 10.dp)
@@ -67,7 +94,9 @@ fun OptionsScreen(
                 iconColor = Color(0xFFEAEF4E),
                 text = "Scroll Enabled",
                 isPreference = true,
-                onClick = {}
+                onClick = {
+                    onEvent(OptionsUiEvent.OnUnfinishedFeatureClicked)
+                }
             )
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 10.dp)
@@ -77,7 +106,9 @@ fun OptionsScreen(
                 iconColor = Color(0xFF7370C5),
                 text = "Keyboard Enabled",
                 isPreference = true,
-                onClick = {}
+                onClick = {
+                    onEvent(OptionsUiEvent.OnUnfinishedFeatureClicked)
+                }
             )
             Heading("Account")
             OptionItem(
@@ -85,7 +116,9 @@ fun OptionsScreen(
                 iconColor = Color(0xFFFE294D),
                 text = "Username",
                 isPreference = false,
-                onClick = {}
+                onClick = {
+                    onEvent(OptionsUiEvent.OnUnfinishedFeatureClicked)
+                }
             )
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 10.dp)
@@ -95,7 +128,9 @@ fun OptionsScreen(
                 iconColor = Color(0xFF0084FE),
                 text = "Delete Account",
                 isPreference = false,
-                onClick = {}
+                onClick = {
+                    onEvent(OptionsUiEvent.OnUnfinishedFeatureClicked)
+                }
             )
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 10.dp)
@@ -120,7 +155,7 @@ fun OptionsScreen(
                 confirmButton = {
                     OutlinedButton(
                         onClick = {
-                            onNavigateToLogin()
+                            onEvent(OptionsUiEvent.OnLogoutClicked)
                             showDialog.value = false
                         }
                     ) {
@@ -151,7 +186,10 @@ fun Heading(
 @Composable
 private fun OptionsScreenPreview() {
     OptionsScreen(
-        onBackClicked = {},
-        onNavigateToLogin = {}
+        onNavigateToLogin = {},
+        onEvent = {},
+        uiEffect = MutableSharedFlow(),
+        onNavigateToHome = {}
+
     )
 }

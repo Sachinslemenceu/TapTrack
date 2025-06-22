@@ -29,6 +29,7 @@ import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseScreen
 import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
 import com.slemenceu.taptrack.mousepad.ui.options_screen.OptionsScreen
+import com.slemenceu.taptrack.mousepad.ui.options_screen.OptionsViewModel
 import com.slemenceu.taptrack.mousepad.ui.pc_guide_screen.PcGuideScreen
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -164,11 +165,15 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 )
             }
         ) {
+
+            val viewModel = koinViewModel<OptionsViewModel>()
             OptionsScreen(
-                onBackClicked = { navController.popBackStack() },
+                uiEffect = viewModel.uiEffect,
+                onEvent = viewModel::onEvent,
+                onNavigateToHome = { navController.popBackStack() },
                 onNavigateToLogin = {
                     navController.navigate(Login) {
-                        popUpTo(Splash) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
