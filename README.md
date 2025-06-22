@@ -27,8 +27,8 @@ Make sure to have the PC client running on the same local network for seamless d
 </p>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/28ab9701-3e20-47ec-a5fb-92fd6b40ac2b" width="15%" />
-  <img src="https://github.com/user-attachments/assets/b14b04e2-2e31-4950-9d7f-5a46de18de41" width="15%" />
   <img src="https://github.com/user-attachments/assets/91f527a0-805c-4065-bfbc-96546a1b0b59" width="15%" />
+  <img src="https://github.com/user-attachments/assets/b14b04e2-2e31-4950-9d7f-5a46de18de41" width="15%" />
   <img src="https://github.com/user-attachments/assets/db73e8c1-a046-42c5-9313-0c43f7111c5a" width="15%" />
 </p>
 <p align="center">
