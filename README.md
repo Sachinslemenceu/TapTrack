@@ -20,17 +20,16 @@ Make sure to have the PC client running on the same local network for seamless d
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/ac1fbf9a-27f0-4117-93e2-69f8ac17af1d" width="15%" />
-  <img src="https://github.com/user-attachments/assets/79610e13-063f-4d3a-9ef7-688f24f9ea94" width="15%" />
-  <img src="https://github.com/user-attachments/assets/530b3cff-0ecf-44e7-b045-0b4a11765d20" width="15%" />
   <img src="https://github.com/user-attachments/assets/acd89a82-982d-4d86-97e6-716b2c4e2b5b" width="15%" />
-  <img src="https://github.com/user-attachments/assets/db73e8c1-a046-42c5-9313-0c43f7111c5a" width="15%" />
+  <img src="https://github.com/user-attachments/assets/530b3cff-0ecf-44e7-b045-0b4a11765d20" width="15%" />
+  <img src="https://github.com/user-attachments/assets/79610e13-063f-4d3a-9ef7-688f24f9ea94" width="15%" />
+  <img src="https://github.com/user-attachments/assets/2ba422f3-f0df-47ac-8a89-1f3f4aac2e3a" width="15%" />
 </p>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/db73e8c1-a046-42c5-9313-0c43f7111c5a" width="15%" />
+  <img src="https://github.com/user-attachments/assets/28ab9701-3e20-47ec-a5fb-92fd6b40ac2b" width="15%" />
   <img src="https://github.com/user-attachments/assets/b14b04e2-2e31-4950-9d7f-5a46de18de41" width="15%" />
   <img src="https://github.com/user-attachments/assets/91f527a0-805c-4065-bfbc-96546a1b0b59" width="15%" />
-  <img src="https://github.com/user-attachments/assets/28ab9701-3e20-47ec-a5fb-92fd6b40ac2b" width="15%" />
-  <img src="https://github.com/user-attachments/assets/2ba422f3-f0df-47ac-8a89-1f3f4aac2e3a" width="15%" />
+  <img src="https://github.com/user-attachments/assets/db73e8c1-a046-42c5-9313-0c43f7111c5a" width="15%" />
 </p>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/eaa1a16f-ae68-4285-b78e-0b9874a411d6" width="40%" />
