@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     id("com.google.gms.google-services")
-    kotlin("plugin.serialization") version "2.1.21"
 }
 
 android {
@@ -78,7 +78,7 @@ dependencies {
 // google play services
     implementation("com.google.android.gms:play-services-base:18.4.0")
 //    google fonts
-    implementation("androidx.compose.ui:ui-text-google-fonts:<version>")
+    implementation("androidx.compose.ui:ui-text-google-fonts")
     // ZXing embedded scanner (camera scanner)
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
