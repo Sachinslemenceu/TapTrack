@@ -29,4 +29,11 @@ val darkOrange = Color(0xFFFF7648)
 val lightBlue = Color(0xFF8F98FF)
 
 val lightGrey10 = Color(0xFFEEEEEE)
+val lightGrey400 = Color(0xFF9CA3AF)
+val lightGrey300 = Color(0xFF6B7280)
 
+
+val darkBlue900 = Color(0xFF0A0C10)
+val darkBlue800 = Color(0xFF1E2330)
+
+val green500 = Color(0xFF00E5A0)

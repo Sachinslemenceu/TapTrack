@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.ui.theme.darkViolet
+import com.slemenceu.taptrack.ui.theme.green500
 
 @Composable
 fun MyButton(
@@ -26,15 +27,15 @@ fun MyButton(
         onClick = { onClick() },
         modifier = modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
-            containerColor = darkViolet
+            containerColor = green500
         ),
         shape = RoundedCornerShape(10.dp)
     ) {
         Text(
             text = text,
-            fontSize = 25.sp,
-            color = Color.White,
-            fontWeight = FontWeight.Medium
+            fontSize = 15.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold
             )
     }
 }

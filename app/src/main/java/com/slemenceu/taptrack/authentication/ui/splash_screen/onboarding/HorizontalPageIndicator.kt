@@ -14,8 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.slemenceu.taptrack.ui.theme.green500
 import kotlin.math.absoluteValue
 
 @Composable
@@ -25,7 +27,7 @@ fun HorizontalPagerIndicator(
     targetPage: Int,
     currentPageOffsetFraction: Float,
     modifier: Modifier = Modifier,
-    indicatorColor: Color = Color.DarkGray,
+    indicatorColor: Color = green500,
     unselectedIndicatorSize: Dp = 8.dp,
     selectedIndicatorSize: Dp = 10.dp,
     indicatorCornerRadius: Dp = 2.dp,
@@ -75,4 +77,17 @@ fun HorizontalPagerIndicator(
             )
         }
     }
+}
+
+
+@Preview
+@Composable
+private fun HorizontalPagerIndicatorPreview() {
+    HorizontalPagerIndicator(
+        pageCount = 3,
+        currentPage = 0,
+        targetPage = 1,
+        currentPageOffsetFraction = 0.5f,
+        modifier = Modifier.padding(16.dp)
+    )
 }
