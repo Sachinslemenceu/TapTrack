@@ -57,6 +57,7 @@ fun MyTextField(
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = green500,
+                cursorColor = green500,
                 unfocusedBorderColor = darkBlue800,
                 unfocusedTextColor = contentColor,
                 focusedTextColor = contentColor,

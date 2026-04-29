@@ -6,6 +6,7 @@ import com.slemenceu.taptrack.authentication.data.AuthStatus
 import com.slemenceu.taptrack.authentication.domain.AuthRepository
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginViewModel
 import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterViewModel
+import com.slemenceu.taptrack.authentication.ui.reset_password.ResetPasswordViewModel
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
 import com.slemenceu.taptrack.mousepad.data.repository.HomeRepositoryImpl
 import com.slemenceu.taptrack.mousepad.data.repository.MouseRepositoryImpl
@@ -31,6 +32,7 @@ val appModule = module {
     single { HomeViewModel(get(), get(),get(),get()) }
     single { LoginViewModel(get()) }
     single { RegisterViewModel(get()) }
+    single { ResetPasswordViewModel(get()) }
     single { WifiService(get()) }
     single{ MouseViewModel(get()) }
     single{ OptionsViewModel(get()) }

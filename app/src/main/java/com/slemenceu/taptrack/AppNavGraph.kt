@@ -25,6 +25,8 @@ import com.slemenceu.taptrack.authentication.ui.login_screen.LoginScreen
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginViewModel
 import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterScreen
 import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterViewModel
+import com.slemenceu.taptrack.authentication.ui.reset_password.ResetPasswordScreen
+import com.slemenceu.taptrack.authentication.ui.reset_password.ResetPasswordViewModel
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashScreen
 import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
 import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeScreen
@@ -102,7 +104,7 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                         }
                     },
                     onNavigateToRegister = { navController.navigate(Register) },
-                    onNavigateToForgotPassword = { /* TODO */ }
+                    onNavigateToForgotPassword = { navController.navigate(ResetPassword) }
                 )
             }
             composable<Home>(
@@ -149,7 +151,11 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                             popUpTo(Splash) { inclusive = true }
                             launchSingleTop = true
                         }
-                    }
+                    },
+                    onNavigateToLogin = {
+                        navController.navigate(Login)
+                    },
+                    onBackClicked = { navController.popBackStack() },
                 )
             }
             composable<Mouse> {
@@ -203,6 +209,31 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                     }
                 )
             }
+            composable<ResetPassword>(
+                enterTransition = {
+                    slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    )
+                }
+            ) {
+                val resetPasswordViewModel = koinViewModel<ResetPasswordViewModel>()
+                ResetPasswordScreen(
+                    uiState = resetPasswordViewModel.uiState.collectAsState().value,
+                    onEvent = resetPasswordViewModel::onEvent,
+                    uiEffect = resetPasswordViewModel.uiEffect,
+                    onNavigateToLoginScreen = {
+                        navController.navigate(Login)
+                    },
+                    onBackClicked = { navController.popBackStack() }
+                )
+            }
         }
     }
 
@@ -218,6 +249,8 @@ data object Login
 
 @Serializable
 data object Register
+@Serializable
+data object ResetPassword
 
 @Serializable
 data object Home

@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class RegisterViewModel(
     private val authRepo: AuthRepository,
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState = _uiState.asStateFlow()
@@ -30,43 +30,43 @@ class RegisterViewModel(
                 _uiState.value = _uiState.value.copy(email = event.email)
             }
 
-            is RegisterUiEvent.OnConfirmPasswordChanged -> {
-                _uiState.value = _uiState.value.copy(confirmPassword = event.confirmPassword)
+            is RegisterUiEvent.OnNameChanged -> {
+                _uiState.value = _uiState.value.copy(name = event.name)
             }
+
             is RegisterUiEvent.OnPasswordChanged -> {
                 _uiState.value = _uiState.value.copy(password = event.password)
             }
+
             RegisterUiEvent.OnRegisterClicked -> {
                 _uiState.value = _uiState.value.copy(isLoading = true)
 
                 viewModelScope.launch {
-                    if (uiState.value.password != uiState.value.confirmPassword) {
+
+                    val result = register(uiState.value.name,uiState.value.email, uiState.value.password)
+                    if (result) {
+                        authRepo.saveAuthStatus(isLoggedIn = true)
+                        emitEffect(RegisterUiEffect.NavigateToHome)
+                    } else {
                         emitEffect(RegisterUiEffect.PasswordUnmatched)
                         clearFields()
-                    } else {
-                        val result = register(uiState.value.email, uiState.value.password)
-                        if (result) {
-                            authRepo.saveAuthStatus(isLoggedIn = true)
-                            emitEffect(RegisterUiEffect.NavigateToHome)
-                        } else {
-                            emitEffect(RegisterUiEffect.PasswordUnmatched)
-                            clearFields()
-                        }
                     }
                 }
             }
         }
     }
-    private suspend fun register(email: String, password: String): Boolean {
-        val result = authRepo.register(email, password)
+
+    private suspend fun register(name: String,email: String, password: String): Boolean {
+        val result = authRepo.register(name,email, password)
         _uiState.value = _uiState.value.copy(isLoading = false)
         return result
     }
+
     private fun clearFields() {
         _uiState.value = _uiState.value.copy(
             email = "",
             password = "",
-            confirmPassword = ""
+            name = ""
         )
     }
 

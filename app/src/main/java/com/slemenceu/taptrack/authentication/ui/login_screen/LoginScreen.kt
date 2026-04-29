@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,9 +40,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -85,6 +89,22 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit,
 ) {
     val context = LocalContext.current
+    val createAccountText =buildAnnotatedString {
+        append("Don't have an account? ")
+
+        withLink(
+            LinkAnnotation.Clickable(
+                tag = "register",
+                styles = TextLinkStyles(
+                    style = SpanStyle(color = green500, fontWeight = FontWeight.Bold)
+                ),
+                linkInteractionListener = { onNavigateToRegister() }
+            )
+        ) {
+            append("Create one")
+        }
+
+    }
     val TAG = "LoginScreen"
     LaunchedEffect(Unit) {
         uiEffect.collect {
@@ -222,21 +242,10 @@ fun LoginScreen(
                     Spacer(Modifier.weight(1f))
                 }
             }
-            TextButton(
-                onClick = onNavigateToRegister
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = lightGrey300)) {
-                            append("Don't have an account? ")
-                        }
-                        withStyle(style = SpanStyle(color = green500, fontWeight = FontWeight.Bold)) {
-                            append("Create one")
-                        }
-                    },
-                    fontSize = 12.sp,
-                )
-            }
+            Text(
+                text = createAccountText,
+                style = MaterialTheme.typography.bodySmall.copy(color = lightGrey300)
+            )
 
             Spacer(Modifier.weight(1f))
         }

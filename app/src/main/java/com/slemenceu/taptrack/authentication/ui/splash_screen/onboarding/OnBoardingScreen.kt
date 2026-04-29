@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,10 +28,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -74,6 +78,22 @@ fun OnBoardingScreen(
         pageCount = { animationIcons.size },
         initialPage = 0
     )
+    val signInText =buildAnnotatedString {
+        append("Already have an account? ")
+
+        withLink(
+            LinkAnnotation.Clickable(
+                tag = "terms",
+                styles = TextLinkStyles(
+                    style = SpanStyle(color = green500, fontWeight = FontWeight.Bold)
+                ),
+                linkInteractionListener = { onSignInClicked() }
+            )
+        ) {
+            append("Sign In")
+        }
+
+    }
 
     LaunchedEffect(Unit) {
 
@@ -152,26 +172,11 @@ fun OnBoardingScreen(
             onGetStartedClicked()
         }
         Spacer(Modifier.height(20.dp))
-        TextButton(
-            onClick = onSignInClicked
-        ) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = lightGrey300)) {
-                        append("Already have an account? ")
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            color = green500,
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append("Sign In")
-                    }
-                },
-                fontSize = 12.sp
-            )
-        }
+        Text(
+            text = signInText,
+            style = MaterialTheme.typography.bodySmall.copy(color = lightGrey300)
+        )
+
         Spacer(Modifier.weight(0.5f))
 
 

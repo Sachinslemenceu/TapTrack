@@ -11,8 +11,12 @@ class AuthRepositoryImpl(
         return authService.login(email, password)
     }
 
-    override suspend fun register(email: String, password: String): Boolean {
-        return authService.register(email, password)
+    override suspend fun register(name: String,email: String, password: String): Boolean {
+        return authService.register(name,email, password)
+    }
+
+    override suspend fun sendResetPasswordLink(email: String): Boolean {
+        return authService.sendResetPasswordLink(email)
     }
 
     override suspend fun saveAuthStatus(isLoggedIn: Boolean) {
