@@ -31,11 +31,7 @@ class SplashViewModel(
 
     fun onEvent(event: SplashUiEvent){
         when(event){
-            is SplashUiEvent.OnGetStartedClicked -> {
-                viewModelScope.launch {
-                    sendEffect(SplashUiEffect.NavigateToLogin)
-                }
-            }
+
             is SplashUiEvent.OnAnimationDone -> {
                 viewModelScope.launch {
                     if (isLoggedIn.value == true) {

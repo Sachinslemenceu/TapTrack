@@ -49,11 +49,10 @@ fun SplashScreen(
     onEvent: (SplashUiEvent) -> Unit,
     uiEffect: SharedFlow<SplashUiEffect>,
     onNavigateToLogin: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToHome: () -> Unit,
+    onNavigateToRegister: () -> Unit,
 ) {
-//    Scaffold(
-//        containerColor = darkBlue900
-//    ) {
+
 
         val TAG = "SplashScreen"
         val iconScale by rememberInfiniteTransition(label = "iconScaleTransition").animateFloat(
@@ -124,14 +123,10 @@ fun SplashScreen(
             }
         } else {
             OnBoardingScreen(
-                onGetStartedClicked = {
-                    onEvent(SplashUiEvent.OnGetStartedClicked)
-                },
-                onSignInClicked = {},
-//                modifier = modifier.padding(it)
+                onGetStartedClicked = onNavigateToRegister,
+                onSignInClicked = onNavigateToLogin,
             )
         }
-//    }
 
 }
 
@@ -144,6 +139,7 @@ private fun SplashScreenPreview() {
         onEvent = {},
         uiEffect = MutableSharedFlow(),
         onNavigateToLogin = {},
-        onNavigateToHome = {}
+        onNavigateToHome = {},
+        onNavigateToRegister = {},
     )
 }

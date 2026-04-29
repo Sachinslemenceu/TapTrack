@@ -66,6 +66,12 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                             launchSingleTop = true
                         }
                     },
+                    onNavigateToRegister = {
+                        navController.navigate(Register) {
+                            popUpTo(Splash) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
                     onNavigateToHome = {
                         navController.navigate(Home) {
                             popUpTo(Splash) { inclusive = true }
