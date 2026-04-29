@@ -22,7 +22,7 @@ class ResetPasswordViewModel(
     fun onEvent(event: ResetPasswordUiEvent) {
         when (event) {
             is ResetPasswordUiEvent.OnEmailChanged -> {
-                _uiState.value.copy(email = event.email)
+               _uiState.value = _uiState.value.copy(email = event.email)
             }
 
             is ResetPasswordUiEvent.OnSendResetLinkClicked -> {

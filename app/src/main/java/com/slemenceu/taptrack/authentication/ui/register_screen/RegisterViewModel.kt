@@ -1,5 +1,6 @@
 package com.slemenceu.taptrack.authentication.ui.register_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.slemenceu.taptrack.authentication.data.AuthService
@@ -42,8 +43,10 @@ class RegisterViewModel(
                 _uiState.value = _uiState.value.copy(isLoading = true)
 
                 viewModelScope.launch {
+                    Log.d("RegisterViewModel", "Attempting to register with email: ${uiState.value.email}, name: ${uiState.value.name}")
 
                     val result = register(uiState.value.name,uiState.value.email, uiState.value.password)
+                    Log.d("RegisterViewModel", "Registration result: $result")
                     if (result) {
                         authRepo.saveAuthStatus(isLoggedIn = true)
                         emitEffect(RegisterUiEffect.NavigateToHome)
