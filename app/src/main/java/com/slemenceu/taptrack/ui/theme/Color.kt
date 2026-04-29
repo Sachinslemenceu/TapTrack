@@ -30,7 +30,9 @@ val lightBlue = Color(0xFF8F98FF)
 
 val lightGrey10 = Color(0xFFEEEEEE)
 val lightGrey400 = Color(0xFF9CA3AF)
+val lightGrey350 = Color(0xFF6B7280)
 val lightGrey300 = Color(0xFF6B7280)
+val lightGrey800 = Color(0xFF111318)
 
 
 val darkBlue900 = Color(0xFF0A0C10)

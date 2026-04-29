@@ -43,6 +43,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.ui.theme.darkBlue800
+import com.slemenceu.taptrack.ui.theme.lightGrey800
 
 @Composable
 fun PageScreen(
@@ -85,7 +86,7 @@ fun PageScreen(
                 color = darkBlue800
             ),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF111318)
+                containerColor = lightGrey800
             ),
             modifier = Modifier
                 .fillMaxWidth()

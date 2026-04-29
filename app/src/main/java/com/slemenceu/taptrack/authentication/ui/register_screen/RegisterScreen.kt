@@ -2,8 +2,6 @@ package com.slemenceu.taptrack.authentication.ui.register_screen
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +14,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,16 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.R
-import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnEmailChanged
-import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnPasswordChanged
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyButton
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyTextField
-import com.slemenceu.taptrack.ui.theme.alegreya
 import com.slemenceu.taptrack.ui.theme.darkViolet
 import com.slemenceu.taptrack.ui.theme.lightGrey10
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 
 @Composable
@@ -96,7 +88,7 @@ fun RegisterScreen(
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 modifier = Modifier.padding(horizontal = 30.dp),
-                trailingIcon = Icons.Outlined.Email
+                leadingIcon = Icons.Outlined.Email
 
             )
             Spacer(Modifier.height(20.dp))
@@ -107,7 +99,7 @@ fun RegisterScreen(
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 modifier = Modifier.padding(horizontal = 30.dp),
-                trailingIcon = Icons.Outlined.Lock
+                leadingIcon = Icons.Outlined.Lock
             )
             Spacer(Modifier.height(20.dp))
             MyTextField(
@@ -117,7 +109,7 @@ fun RegisterScreen(
                 containerColor = Color.White,
                 contentColor = Color.Black,
                 modifier = Modifier.padding(horizontal = 30.dp),
-                trailingIcon = Icons.Outlined.Lock
+                leadingIcon = Icons.Outlined.Lock
             )
             Spacer(Modifier.height(20.dp))
             Text(

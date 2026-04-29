@@ -48,12 +48,6 @@ class LoginViewModel(
                     }
                 }
             }
-            is LoginUiEvent.OnRegisterClicked -> {
-                viewModelScope.launch {
-                    Log.d("LoginViewModel", "Register effect send")
-                    sendEffect(LoginUiEffect.NavigateToRegister)
-                }
-            }
         }
     }
 

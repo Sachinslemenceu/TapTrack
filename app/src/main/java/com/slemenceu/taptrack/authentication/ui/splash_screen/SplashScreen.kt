@@ -51,9 +51,9 @@ fun SplashScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToHome: () -> Unit
 ) {
-    Scaffold(
-        containerColor = darkBlue900
-    ) {
+//    Scaffold(
+//        containerColor = darkBlue900
+//    ) {
 
         val TAG = "SplashScreen"
         val iconScale by rememberInfiniteTransition(label = "iconScaleTransition").animateFloat(
@@ -88,7 +88,7 @@ fun SplashScreen(
             Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .padding(it),
+                ,
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -128,10 +128,10 @@ fun SplashScreen(
                     onEvent(SplashUiEvent.OnGetStartedClicked)
                 },
                 onSignInClicked = {},
-                modifier = modifier.padding(it)
+//                modifier = modifier.padding(it)
             )
         }
-    }
+//    }
 
 }
 

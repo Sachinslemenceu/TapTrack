@@ -2,9 +2,11 @@ package com.slemenceu.taptrack.authentication.ui.login_screen
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,30 +17,32 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,20 +54,24 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnEmailChanged
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnPasswordChanged
-import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashUiEffect
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyButton
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyTextField
-import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeUiEvent
-import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeUiState
+import com.slemenceu.taptrack.core.composables.AppTopBar
+import com.slemenceu.taptrack.core.composables.LoadingIndicator
 import com.slemenceu.taptrack.ui.theme.alegreya
+import com.slemenceu.taptrack.ui.theme.darkBlue800
+import com.slemenceu.taptrack.ui.theme.darkBlue900
 import com.slemenceu.taptrack.ui.theme.darkGrey
+import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.lightGrey10
+import com.slemenceu.taptrack.ui.theme.lightGrey300
+import com.slemenceu.taptrack.ui.theme.lightGrey350
+import com.slemenceu.taptrack.ui.theme.lightGrey400
+import com.slemenceu.taptrack.ui.theme.lightGrey800
 import com.slemenceu.taptrack.ui.theme.overTheRainbow
-import com.slemenceu.taptrack.ui.theme.violet10
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import org.koin.androidx.compose.koinViewModel
+import kotlin.math.cos
 
 @Composable
 fun LoginScreen(
@@ -71,16 +79,12 @@ fun LoginScreen(
     uiState: LoginUiState,
     onEvent: (LoginUiEvent) -> Unit,
     uiEffect: SharedFlow<LoginUiEffect>,
-    onNavigateToHome:() -> Unit,
-    onNavigateToRegister:() -> Unit
+    onBackClicked: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
 ) {
     val context = LocalContext.current
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loadinng_ani))
-    val progress by animateLottieCompositionAsState(
-        composition = composition,
-        iterations = IterateForever,
-        speed = 1f,
-    )
     val TAG = "LoginScreen"
     LaunchedEffect(Unit) {
         uiEffect.collect {
@@ -90,140 +94,178 @@ fun LoginScreen(
 
                     onNavigateToHome()
                 }
-               is LoginUiEffect.InvalidCredential -> {
+
+                is LoginUiEffect.InvalidCredential -> {
                     Toast.makeText(context, "Invalid Credentials", Toast.LENGTH_SHORT).show()
                 }
 
-               is LoginUiEffect.NavigateToRegister -> {
-                   Log.d(TAG,"Navigate to register")
-                   onNavigateToRegister()
-               }
             }
         }
     }
-    Scaffold(
-        containerColor = Color.White
+    AppTopBar(
+        onBackClicked = onBackClicked
     ) {
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(it)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(Modifier.weight(1f))
-                Image(
-                    painter = painterResource(R.drawable.login_img),
-                    contentDescription = "Top table image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 60.dp)
-                )
-                Spacer(Modifier.height(15.dp))
-                Text(
-                    text = "One Step Away",
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = overTheRainbow,
-                    color = Color(0xFF7B5A30)
-                )
-                Spacer(Modifier.height(40.dp))
-                MyTextField(
-                    value = uiState.email,
-                    onValueChange = { onEvent(OnEmailChanged(it)) },
-                    placeholder = stringResource(R.string.email),
-                    containerColor = lightGrey10,
-                    contentColor = darkGrey,
-                    modifier = Modifier.padding(horizontal = 30.dp),
-                    trailingIcon = Icons.Outlined.Email
-
-                )
-                Spacer(Modifier.height(20.dp))
-                MyTextField(
-                    value = uiState.password,
-                    onValueChange = { onEvent(OnPasswordChanged(it)) },
-                    placeholder = stringResource(R.string.password),
-                    containerColor = lightGrey10,
-                    contentColor = darkGrey,
-                    modifier = Modifier.padding(horizontal = 30.dp),
-                    trailingIcon = Icons.Outlined.Lock,
-                )
-                Spacer(Modifier.height(40.dp))
-                MyButton(
-                    text = stringResource(R.string.login),
-                    modifier = Modifier.padding(horizontal = 40.dp),
-                    onClick = { onEvent(LoginUiEvent.OnLoginClicked) }
-                )
-                Spacer(Modifier.height(40.dp))
-                Row {
-                    Text(
-                        text = stringResource(
-                            R.string.register_here,
-                        ),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = alegreya,
-                        color = darkGrey,
-                        modifier = Modifier.clickable(
-                            onClick = {
-                                Log.d(TAG,"Register button clicked")
-                                onEvent(LoginUiEvent.OnRegisterClicked)
-                            }
-                        )
-
-                        )
-                    Spacer(Modifier.width(5.dp))
-                    Image(
-                        painter = painterResource(R.drawable.click_img),
-                        contentDescription = "Click image",
-                        modifier = Modifier.size(34.dp)
-                    )
-
-                }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = stringResource(
-                        R.string.app_version,
-                    ),
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = alegreya,
-                    color = darkGrey,
-
-                    )
-                Spacer(Modifier.weight(1f))
-            }
-        }
-        if(uiState.isLoading){
-            Box(
+            Spacer(Modifier.height(75.dp))
+            Text(
+                text ="WELCOME BACK",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                color = green500,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f)),
-                contentAlignment = Alignment.Center,
+                    .align(Alignment.Start)
+            )
+            Text(
+                text ="Sign in to your \naccount",
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.Start)
+            )
+            Spacer(Modifier.height(40.dp))
+            MyTextField(
+                value = uiState.email,
+                onValueChange = { onEvent(OnEmailChanged(it)) },
+                placeholder = stringResource(R.string.email),
+                leadingIcon = Icons.Outlined.Email
 
+            )
+            Spacer(Modifier.height(14.dp))
+            MyTextField(
+                value = uiState.password,
+                onValueChange = { onEvent(OnPasswordChanged(it)) },
+                placeholder = stringResource(R.string.password),
+                title = "Password",
+                leadingIcon = Icons.Outlined.Lock,
+            )
+            Spacer(Modifier.height(14.dp))
+            TextButton(
+                onClick = onNavigateToForgotPassword,
+                modifier = Modifier.align(Alignment.End)
             ) {
-                LottieAnimation(
-                    composition = composition,
-                    progress = { progress }
+                Text(
+                    text = "Forgot Password?",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = green500,
                 )
             }
+            Spacer(Modifier.height(40.dp))
+            MyButton(
+                text = "Sign In",
+                onClick = { onEvent(LoginUiEvent.OnLoginClicked) }
+            )
+            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.weight(1f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color(0xFF1E2330),
+                    modifier = Modifier
+                        .weight(1f)
+                )
+                Text(
+                    text = "Or continue with",
+                    fontSize = 11.sp,
+                    color = lightGrey300,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                )
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color(0xFF1E2330),
+                    modifier = Modifier
+                        .weight(1f)
+                )
+            }
+            Spacer(Modifier.height(10.dp))
+            OutlinedButton(
+                onClick = {
+                    // Handle Google Sign-In
+                    Toast.makeText(context, "Google Sign-In is Currently not available", Toast.LENGTH_SHORT).show()
+                },
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = lightGrey800
+                ),
+                border = BorderStroke(
+                    1.dp,
+                    darkBlue800
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    Spacer(Modifier.weight(0.3f))
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.google_icon),
+                        contentDescription = "Google Icon",
+                        tint = Color.Unspecified,
+                    )
+                    Spacer(Modifier.weight(0.5f))
+                    Text(
+                        text = "Continue with Google",
+                        fontSize = 13.sp,
+                        color = Color.White,
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+            }
+            TextButton(
+                onClick = onNavigateToRegister
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = lightGrey300)) {
+                            append("Don't have an account? ")
+                        }
+                        withStyle(style = SpanStyle(color = green500, fontWeight = FontWeight.Bold)) {
+                            append("Create one")
+                        }
+                    },
+                    fontSize = 12.sp,
+                )
+            }
+
+            Spacer(Modifier.weight(1f))
         }
+    }
+
+    if (uiState.isLoading) {
+        LoadingIndicator()
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(
-        uiState = LoginUiState(
-            email = "Sachin",
-            password = "password",
-            isLoading = false
-        ),
-        onEvent = {},
-        uiEffect = MutableSharedFlow(),
-        onNavigateToHome = {},
-        onNavigateToRegister = {}
-    )
+    Scaffold(
+        containerColor = darkBlue900
+    ) {
+        LoginScreen(
+            uiState = LoginUiState(
+                email = "Sachin",
+                password = "password",
+                isLoading = false
+            ),
+            onEvent = {},
+            uiEffect = MutableSharedFlow(),
+            onBackClicked = {},
+            onNavigateToHome = {},
+            onNavigateToRegister = {},
+            onNavigateToForgotPassword = {},
+            modifier = Modifier.padding(it)
+        )
+    }
 }

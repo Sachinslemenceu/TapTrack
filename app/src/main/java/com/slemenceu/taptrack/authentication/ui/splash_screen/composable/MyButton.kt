@@ -3,6 +3,7 @@ package com.slemenceu.taptrack.authentication.ui.splash_screen.composable
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,7 +26,9 @@ fun MyButton(
 ) {
     Button(
         onClick = { onClick() },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = green500
         ),
