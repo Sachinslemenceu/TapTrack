@@ -18,15 +18,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -37,10 +32,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.slemenceu.taptrack.R
-import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent
-import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnEmailChanged
-import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyButton
+import com.slemenceu.taptrack.core.composables.MyPrimaryButton
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyTextField
 import com.slemenceu.taptrack.core.composables.AppTopBar
 import com.slemenceu.taptrack.ui.theme.darkBlue800
@@ -133,7 +125,7 @@ fun ResetPasswordScreen(
 
             )
             Spacer(Modifier.height(40.dp))
-            MyButton(
+            MyPrimaryButton(
                 text = "Send Reset Link",
                 onClick = {
                     onEvent(ResetPasswordUiEvent.OnSendResetLinkClicked)

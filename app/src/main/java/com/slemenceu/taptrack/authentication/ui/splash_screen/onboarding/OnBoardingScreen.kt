@@ -1,25 +1,19 @@
 package com.slemenceu.taptrack.authentication.ui.splash_screen.onboarding
 
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -40,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.R
-import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyButton
+import com.slemenceu.taptrack.core.composables.MyPrimaryButton
 import com.slemenceu.taptrack.ui.theme.darkBlue900
 import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.lightGrey300
@@ -166,7 +160,7 @@ fun OnBoardingScreen(
                 .fillMaxWidth()
         )
         Spacer(Modifier.height(20.dp))
-        MyButton(
+        MyPrimaryButton(
             text = "Get Started",
         ) {
             onGetStartedClicked()

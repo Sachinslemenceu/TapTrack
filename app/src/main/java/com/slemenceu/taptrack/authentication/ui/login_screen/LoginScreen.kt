@@ -1,22 +1,13 @@
 package com.slemenceu.taptrack.authentication.ui.login_screen
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
@@ -31,13 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.LinkAnnotation
@@ -46,36 +35,23 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withLink
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants.IterateForever
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnEmailChanged
 import com.slemenceu.taptrack.authentication.ui.login_screen.LoginUiEvent.OnPasswordChanged
-import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyButton
+import com.slemenceu.taptrack.core.composables.MyPrimaryButton
 import com.slemenceu.taptrack.authentication.ui.splash_screen.composable.MyTextField
 import com.slemenceu.taptrack.core.composables.AppTopBar
 import com.slemenceu.taptrack.core.composables.LoadingIndicator
-import com.slemenceu.taptrack.ui.theme.alegreya
 import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.darkBlue900
-import com.slemenceu.taptrack.ui.theme.darkGrey
 import com.slemenceu.taptrack.ui.theme.green500
-import com.slemenceu.taptrack.ui.theme.lightGrey10
 import com.slemenceu.taptrack.ui.theme.lightGrey300
-import com.slemenceu.taptrack.ui.theme.lightGrey350
-import com.slemenceu.taptrack.ui.theme.lightGrey400
 import com.slemenceu.taptrack.ui.theme.lightGrey800
-import com.slemenceu.taptrack.ui.theme.overTheRainbow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlin.math.cos
 
 @Composable
 fun LoginScreen(
@@ -174,7 +150,7 @@ fun LoginScreen(
                 )
             }
             Spacer(Modifier.height(40.dp))
-            MyButton(
+            MyPrimaryButton(
                 text = "Sign In",
                 onClick = { onEvent(LoginUiEvent.OnLoginClicked) }
             )

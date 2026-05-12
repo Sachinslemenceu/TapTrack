@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSet group="kotlin">
+  <template name="prevcomp" value="@Preview(showBackground = true)&#10;@Composable&#10;fun $COMPOSABLE_NAME$Preview() {&#10;    $COMPOSABLE_NAME$()&#10;}&#10;" description="Preview composable with auto-naming from file" toReformat="true" toShortenFQNames="true">
+    <variable name="COMPOSABLE_NAME" expression="camelCase(fileNameWithoutExtension().replaceAll(&quot;(?i)preview$&quot;, &quot;&quot;))" defaultValue="" alwaysStopAt="false" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+</templateSet>
+

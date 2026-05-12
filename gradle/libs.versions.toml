@@ -9,6 +9,12 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
+uiGraphics = "1.11.0"
+cameraCore = "1.5.1"
+cameraCamera2 = "1.5.1"
+composeQrCode = "1.0.1"
+mlkitVersion = "17.3.0"
+
 
 [libraries]
 accompanist-fonts-google = { module = "com.google.accompanist:accompanist-fonts-google", version.ref = "accompanistFontsGoogle" }
@@ -26,6 +32,16 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCore" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
+androidx-camera-compose = { module = "androidx.camera:camera-compose", version.ref = "cameraCore" }
+compose-qr-code = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCode" }
+google-mlkit = {group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkitVersion"}
+
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

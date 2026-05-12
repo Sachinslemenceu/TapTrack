@@ -4,7 +4,8 @@ data class HomeUiState(
     val ssid: String = "",
     val isConnected: Boolean = false,
     val permissions: PermissionUiState = PermissionUiState(),
-    val mousepad: MousepadUiState = MousepadUiState()
+    val mousepad: MousepadUiState = MousepadUiState(),
+    val isFirstTime: Boolean = false
 )
 data class PermissionUiState(
     val allPermissionGranted: Boolean = false,
