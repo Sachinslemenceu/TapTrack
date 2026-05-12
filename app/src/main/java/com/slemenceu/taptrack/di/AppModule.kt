@@ -26,7 +26,7 @@ val appModule = module {
     single { AuthService() }
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<HomeRepository> { HomeRepositoryImpl(get()) }
-    single<MouseRepository> { MouseRepositoryImpl() }
+    single<MouseRepository> { MouseRepositoryImpl(get()) }
     single<QRScannerRepo> { QRScannerRepoImpl() }
     single { SplashViewModel(get()) }
     single { HomeViewModel(get(), get(),get(),get()) }
