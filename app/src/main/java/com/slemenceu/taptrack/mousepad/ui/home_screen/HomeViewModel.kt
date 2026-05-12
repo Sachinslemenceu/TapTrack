@@ -135,15 +135,43 @@ class HomeViewModel(
         return qrScannerRepo.launchScanner(activity)
     }
     private fun scannedResult(result: String){
+        Log.d("HomeScreenLog", "scanned result: $result")
         viewModelScope.launch {
-            val connected = connectToMousepad(result.toInt())
-            _uiState.value = _uiState.value.copy(
-                mousepad = _uiState.value.mousepad.copy(
-                    isConnected = connected
-                )
-            )
+            try {
+                // Parse QR format: "IP:PORT:PASSCODE" (e.g., "192.168.1.4:9999:1234")
+                val parts = result.split(":")
+                
+                if (parts.size == 3) {
+                    // New format with IP and Port from QR code
+                    val ip = parts[0]
+                    val port = parts[1].toInt()
+                    val passcode = parts[2].toInt()
+                    
+                    Log.d("HomeScreenLog", "Parsed QR - IP: $ip, Port: $port, Passcode: $passcode")
+                    
+                    // Connect with config extracted from QR
+                    val connected = mouseRepository.connectToMousepadWithConfig(ip, port, passcode)
+                    _uiState.value = _uiState.value.copy(
+                        mousepad = _uiState.value.mousepad.copy(
+                            isConnected = connected
+                        )
+                    )
+                } else if (parts.size == 1) {
+                    // Fallback: try parsing as just passcode for backward compatibility
+                    Log.d("HomeScreenLog", "Fallback: parsing as passcode only (old format)")
+                    val connected = mouseRepository.connectToMousepad(result.toInt())
+                    _uiState.value = _uiState.value.copy(
+                        mousepad = _uiState.value.mousepad.copy(
+                            isConnected = connected
+                        )
+                    )
+                } else {
+                    Log.e("HomeScreenLog", "Invalid QR format. Expected IP:PORT:PASSCODE or just PASSCODE")
+                }
+            } catch (e: Exception) {
+                Log.e("HomeScreenLog", "Error parsing QR result: ${e.message}", e)
+            }
         }
-
 
     }
 }
