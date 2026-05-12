@@ -60,7 +60,7 @@ fun ScannerScreen(
             )
 
             Text(
-                text ="ALIGN QR CODE IN FRAME",
+                text = "ALIGN QR CODE IN FRAME",
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
                 color = green500,
@@ -85,12 +85,10 @@ fun ScannerScreen(
                     .align(Alignment.Start)
             )
             Spacer(Modifier.height(9.dp))
-            Surface(
-                color = green500.copy(0.05f),
-                border = BorderStroke(1.dp, green500.copy(0.15f)),
-                shape = RoundedCornerShape(15.dp),
-                modifier = modifier
-                    .fillMaxWidth()
+          
+            BackgroundThemeCard(
+                backgroundColor = green500.copy(0.05f),
+                borderColor = green500.copy(0.15f),
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
