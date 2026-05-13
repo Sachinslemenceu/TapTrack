@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.slemenceu.taptrack.authentication.ui.splash_screen.onboarding.OnBoardingScreen
 import com.slemenceu.taptrack.ui.theme.TapTrackTheme
 
 class MainActivity : ComponentActivity() {

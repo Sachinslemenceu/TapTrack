@@ -1,23 +1,28 @@
 package com.slemenceu.taptrack.di
 
-import com.slemenceu.taptrack.authentication.data.AuthRepositoryImpl
-import com.slemenceu.taptrack.authentication.data.AuthService
-import com.slemenceu.taptrack.authentication.data.AuthStatus
-import com.slemenceu.taptrack.authentication.domain.AuthRepository
-import com.slemenceu.taptrack.authentication.ui.login_screen.LoginViewModel
-import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterViewModel
-import com.slemenceu.taptrack.authentication.ui.reset_password.ResetPasswordViewModel
-import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
-import com.slemenceu.taptrack.mousepad.data.repository.HomeRepositoryImpl
-import com.slemenceu.taptrack.mousepad.data.repository.MouseRepositoryImpl
-import com.slemenceu.taptrack.mousepad.data.repository.QRScannerRepoImpl
-import com.slemenceu.taptrack.mousepad.data.services.WifiService
-import com.slemenceu.taptrack.mousepad.domain.HomeRepository
-import com.slemenceu.taptrack.mousepad.domain.MouseRepository
-import com.slemenceu.taptrack.mousepad.domain.QRScannerRepo
-import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
-import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
-import com.slemenceu.taptrack.mousepad.ui.options_screen.OptionsViewModel
+import com.slemenceu.taptrack.features.authentication.data.AuthRepositoryImpl
+import com.slemenceu.taptrack.features.authentication.data.AuthService
+import com.slemenceu.taptrack.features.authentication.data.AuthStatus
+import com.slemenceu.taptrack.features.authentication.domain.AuthRepository
+import com.slemenceu.taptrack.features.authentication.ui.login_screen.LoginViewModel
+import com.slemenceu.taptrack.features.authentication.ui.register_screen.RegisterViewModel
+import com.slemenceu.taptrack.features.authentication.ui.reset_password.ResetPasswordViewModel
+import com.slemenceu.taptrack.features.authentication.ui.splash_screen.SplashViewModel
+import com.slemenceu.taptrack.features.connection.data.repository.ConnectionRepositoryImpl
+import com.slemenceu.taptrack.features.connection.data.service.ConnectionManager
+import com.slemenceu.taptrack.features.connection.domain.repository.ConnectionRepository
+import com.slemenceu.taptrack.features.connection.domain.usecases.ConnectToPcUseCase
+import com.slemenceu.taptrack.features.connection.ui.scanner.ScannerViewModel
+import com.slemenceu.taptrack.features.mousepad.data.repository.HomeRepositoryImpl
+import com.slemenceu.taptrack.features.mousepad.data.repository.MouseRepositoryImpl
+import com.slemenceu.taptrack.features.mousepad.data.repository.QRScannerRepoImpl
+import com.slemenceu.taptrack.features.mousepad.data.services.WifiService
+import com.slemenceu.taptrack.features.mousepad.domain.HomeRepository
+import com.slemenceu.taptrack.features.mousepad.domain.MouseRepository
+import com.slemenceu.taptrack.features.mousepad.domain.QRScannerRepo
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.HomeViewModel
+import com.slemenceu.taptrack.features.mousepad.ui.mousepad_screen.MouseViewModel
+import com.slemenceu.taptrack.features.mousepad.ui.options_screen.OptionsViewModel
 import org.koin.dsl.module
 
 
@@ -36,4 +41,9 @@ val appModule = module {
     single { WifiService(get()) }
     single{ MouseViewModel(get()) }
     single{ OptionsViewModel(get()) }
+    single { ScannerViewModel(get())  }
+
+    single { ConnectToPcUseCase(get()) }
+    single<ConnectionRepository> { ConnectionRepositoryImpl(get()) }
+    single { ConnectionManager() }
 }

@@ -1,0 +1,62 @@
+package com.slemenceu.taptrack.features.authentication.ui.login_screen
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.slemenceu.taptrack.features.authentication.domain.AuthRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+class LoginViewModel(
+    private val authRepo: AuthRepository,
+): ViewModel() {
+
+
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+
+    private val _uiEffect = MutableSharedFlow<LoginUiEffect>()
+    val uiEffect: SharedFlow<LoginUiEffect> = _uiEffect.asSharedFlow()
+
+    fun onEvent(event: LoginUiEvent){
+        when(event){
+            is LoginUiEvent.OnEmailChanged -> {
+                _uiState.value = _uiState.value.copy(email = event.email)
+            }
+            is LoginUiEvent.OnPasswordChanged -> {
+                _uiState.value = _uiState.value.copy(password = event.password)
+            }
+            is LoginUiEvent.OnLoginClicked -> {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                viewModelScope.launch {
+                    val result = validateCredentials(uiState.value.email, uiState.value.password)
+                    if(result){
+                        authRepo.saveAuthStatus(isLoggedIn = true)
+                        sendEffect(LoginUiEffect.NavigateToHome)
+                    }else{
+                        sendEffect(LoginUiEffect.InvalidCredential)
+                        clearLoginCredential()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun sendEffect(effect: LoginUiEffect){
+        _uiEffect.emit(effect)
+    }
+
+    private suspend fun validateCredentials(email: String, password: String): Boolean{
+        val result = authRepo.login(email, password)
+        _uiState.value = _uiState.value.copy(isLoading = false)
+        return result
+    }
+    private fun clearLoginCredential(){
+        _uiState.value = _uiState.value.copy(email = "", password = "")
+    }
+
+}

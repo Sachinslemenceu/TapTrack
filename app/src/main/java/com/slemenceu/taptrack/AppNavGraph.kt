@@ -1,44 +1,38 @@
 package com.slemenceu.taptrack
 
 import android.util.Log
-import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 
-import com.slemenceu.taptrack.authentication.ui.login_screen.LoginScreen
-import com.slemenceu.taptrack.authentication.ui.login_screen.LoginViewModel
-import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterScreen
-import com.slemenceu.taptrack.authentication.ui.register_screen.RegisterViewModel
-import com.slemenceu.taptrack.authentication.ui.reset_password.ResetPasswordScreen
-import com.slemenceu.taptrack.authentication.ui.reset_password.ResetPasswordViewModel
-import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashScreen
-import com.slemenceu.taptrack.authentication.ui.splash_screen.SplashViewModel
-import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeScreen
-import com.slemenceu.taptrack.mousepad.ui.home_screen.HomeViewModel
-import com.slemenceu.taptrack.mousepad.ui.home_screen.composables.manual_connection.ManualConnectionScreen
-import com.slemenceu.taptrack.mousepad.ui.home_screen.composables.scanner.ScannerScreen
-import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseScreen
-import com.slemenceu.taptrack.mousepad.ui.mousepad_screen.MouseViewModel
-import com.slemenceu.taptrack.mousepad.ui.options_screen.OptionsScreen
-import com.slemenceu.taptrack.mousepad.ui.options_screen.OptionsViewModel
-import com.slemenceu.taptrack.mousepad.ui.pc_guide_screen.PcGuideScreen
+import com.slemenceu.taptrack.features.authentication.ui.login_screen.LoginScreen
+import com.slemenceu.taptrack.features.authentication.ui.login_screen.LoginViewModel
+import com.slemenceu.taptrack.features.authentication.ui.register_screen.RegisterScreen
+import com.slemenceu.taptrack.features.authentication.ui.register_screen.RegisterViewModel
+import com.slemenceu.taptrack.features.authentication.ui.reset_password.ResetPasswordScreen
+import com.slemenceu.taptrack.features.authentication.ui.reset_password.ResetPasswordViewModel
+import com.slemenceu.taptrack.features.authentication.ui.splash_screen.SplashScreen
+import com.slemenceu.taptrack.features.authentication.ui.splash_screen.SplashViewModel
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.HomeScreen
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.HomeViewModel
+import com.slemenceu.taptrack.features.connection.ui.manual_connection.ManualConnectionScreen
+import com.slemenceu.taptrack.features.connection.ui.scanner.ScannerScreen
+import com.slemenceu.taptrack.features.connection.ui.scanner.ScannerViewModel
+import com.slemenceu.taptrack.features.mousepad.ui.mousepad_screen.MouseScreen
+import com.slemenceu.taptrack.features.mousepad.ui.mousepad_screen.MouseViewModel
+import com.slemenceu.taptrack.features.mousepad.ui.options_screen.OptionsScreen
+import com.slemenceu.taptrack.features.mousepad.ui.options_screen.OptionsViewModel
+import com.slemenceu.taptrack.features.mousepad.ui.pc_guide_screen.PcGuideScreen
 import com.slemenceu.taptrack.ui.theme.darkBlue900
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -101,7 +95,7 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                         onBackClicked = {
                             if (!navController.popBackStack()) {
                                 // fallback: delegate to system back
-                                (navController.context as? androidx.activity.ComponentActivity)
+                                (navController.context as? ComponentActivity)
                                     ?.onBackPressedDispatcher
                                     ?.onBackPressed()
                             }
@@ -197,7 +191,8 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                         uiEffect = viewModel.uiEffect,
                         navigateToMousepad = { navController.navigate(Mouse) },
                         navigateToPcGuide = { navController.navigate(PCGuide) },
-                        navigateToOptions = { navController.navigate(Options) }
+                        navigateToOptions = { navController.navigate(Options) },
+                        onNavigateToScannerScreen = { navController.navigate(ConnectionGraph) },
                     )
                 }
 
@@ -221,8 +216,17 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                             )
                         }
                     ) {
+                        val scannerViewModel = koinViewModel<ScannerViewModel>()
                         ScannerScreen(
-                            onBackClicked = { navController.popBackStack() }
+                            viewModel = scannerViewModel,
+                            onBackClicked = { navController.popBackStack() },
+                            onNavigateToManualConnection = { navController.navigate(ManualConnection) },
+                            onNavigateToHomeScreen = {
+                                navController.navigate(MainGraph) {
+                                    popUpTo(ConnectionGraph) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
 
