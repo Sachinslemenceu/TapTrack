@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
@@ -36,7 +37,14 @@ class LoginViewModel(
                     val result = validateCredentials(uiState.value.email, uiState.value.password)
                     if(result){
                         authRepo.saveAuthStatus(isLoggedIn = true)
-                        sendEffect(LoginUiEffect.NavigateToHome)
+                        val hasLoggedInBefore = authRepo.readFirstLoginStatus().first()
+                        if (!hasLoggedInBefore) {
+                            // First time login
+                            authRepo.saveFirstLoginStatus(true)
+                            sendEffect(LoginUiEffect.NavigateToHome) // or to onboarding if you have one
+                        } else {
+                            sendEffect(LoginUiEffect.NavigateToHome)
+                        }
                     }else{
                         sendEffect(LoginUiEffect.InvalidCredential)
                         clearLoginCredential()

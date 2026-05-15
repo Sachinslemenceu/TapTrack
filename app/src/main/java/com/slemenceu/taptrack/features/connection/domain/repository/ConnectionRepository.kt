@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface ConnectionRepository {
 
     val connectionStatus: StateFlow<ConnectionStatus>
-    suspend fun connect(ip: String, port: Int, passcode: Int): Result<Unit>
+    suspend fun connect(ip: String, port: Int): Result<Int>
     suspend fun disconnect()
 }

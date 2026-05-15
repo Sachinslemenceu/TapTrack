@@ -8,4 +8,6 @@ interface AuthRepository {
     suspend fun sendResetPasswordLink(email: String): Boolean
     suspend fun saveAuthStatus(isLoggedIn: Boolean)
     suspend fun readAuthStatus(): Flow<Boolean>
+    suspend fun saveFirstLoginStatus(hasLoggedInBefore: Boolean)
+    suspend fun readFirstLoginStatus(): Flow<Boolean>
 }

@@ -26,4 +26,12 @@ class AuthRepositoryImpl(
     override suspend fun readAuthStatus(): Flow<Boolean> {
         return authStatus.readAuthStatus()
     }
+
+    override suspend fun saveFirstLoginStatus(hasLoggedInBefore: Boolean) {
+        return authStatus.saveFirstLoginStatus(hasLoggedInBefore)
+    }
+
+    override suspend fun readFirstLoginStatus(): Flow<Boolean> {
+        return authStatus.readFirstLoginStatus()
+    }
 }

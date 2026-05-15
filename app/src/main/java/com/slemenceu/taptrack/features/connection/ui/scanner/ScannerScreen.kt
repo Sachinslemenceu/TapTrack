@@ -1,8 +1,6 @@
 package com.slemenceu.taptrack.features.connection.ui.scanner
 
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,14 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -26,11 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.R
-import com.slemenceu.taptrack.core.composables.AppTopBar
-import com.slemenceu.taptrack.core.composables.BackgroundThemeCard
-import com.slemenceu.taptrack.core.composables.MySecondaryButton
+import com.slemenceu.taptrack.core.ui.composables.AppTopBar
+import com.slemenceu.taptrack.core.ui.composables.BackgroundThemeCard
+import com.slemenceu.taptrack.core.ui.composables.MySecondaryButton
 import com.slemenceu.taptrack.features.connection.ui.scanner.composables.CameraPreviewContent
-import com.slemenceu.taptrack.ui.theme.darkBlue900
 import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.lightGrey400
 
@@ -38,7 +33,7 @@ import com.slemenceu.taptrack.ui.theme.lightGrey400
 fun ScannerScreen(
     onBackClicked: () -> Unit,
     onNavigateToManualConnection: () -> Unit,
-    onNavigateToHomeScreen:() -> Unit,
+    onNavigateToHomeScreen:(String) -> Unit,
     viewModel: ScannerViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -62,18 +57,7 @@ fun ScannerScreen(
                 CameraPreviewContent(
                     viewModel = viewModel,
                     onQrCodeScanned = {qrCode->
-                        viewModel.connectToPcWithQrCode(
-                            qrCode,
-                            onResult = { success ->
-                                if(success){
-                                    Log.d("ScannerScreen", "Successfully connected to PC with QR code")
-                                    onNavigateToHomeScreen()
-                                } else {
-                                    Log.e("ScannerScreen", "Failed to connect to PC with QR code")
-                                    onNavigateToHomeScreen()
-                                }
-                            }
-                        )
+                        onNavigateToHomeScreen(qrCode)
                     },
                     modifier = Modifier
                 )

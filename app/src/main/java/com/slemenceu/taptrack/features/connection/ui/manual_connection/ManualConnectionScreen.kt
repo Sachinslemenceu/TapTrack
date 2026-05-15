@@ -22,17 +22,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.features.authentication.ui.splash_screen.composable.MyTextField
-import com.slemenceu.taptrack.core.composables.AppTopBar
-import com.slemenceu.taptrack.core.composables.BackgroundThemeCard
-import com.slemenceu.taptrack.core.composables.MyPrimaryButton
-import com.slemenceu.taptrack.core.composables.MySecondaryButton
+import com.slemenceu.taptrack.core.ui.composables.AppTopBar
+import com.slemenceu.taptrack.core.ui.composables.BackgroundThemeCard
+import com.slemenceu.taptrack.core.ui.composables.MyPrimaryButton
+import com.slemenceu.taptrack.core.ui.composables.MySecondaryButton
 import com.slemenceu.taptrack.ui.theme.blue500
 import com.slemenceu.taptrack.ui.theme.darkBlue900
 import com.slemenceu.taptrack.ui.theme.lightGrey400
 
 @Composable
 fun ManualConnectionScreen(
-    onBackClicked: () -> Unit = {},
+    onBackClicked: () -> Unit,
+    onNavigateToHomeScreen: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -105,7 +106,10 @@ fun ManualConnectionScreen(
             Spacer(Modifier.height(16.dp))
             MyPrimaryButton(
                 text = "Connect",
-                onClick = { },
+                onClick = {
+                    val connectionInfo = "$ipAddress:$portNo:1234"
+                    onNavigateToHomeScreen(connectionInfo)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -113,7 +117,7 @@ fun ManualConnectionScreen(
             MySecondaryButton(
                 text = "Back to QR Scan",
                 textColor = lightGrey400,
-                onClick = { },
+                onClick = onBackClicked,
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -129,7 +133,9 @@ private fun ManualConnectionScreenPreview() {
         containerColor = darkBlue900
     ) {
         ManualConnectionScreen(
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(it),
+            onBackClicked = {},
+            onNavigateToHomeScreen = {}
         )
     }
 }

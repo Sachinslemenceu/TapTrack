@@ -95,4 +95,5 @@ dependencies {
 //    For QR Code Generation
     implementation(libs.compose.qr.code)
 
+    implementation("io.ktor:ktor-network:2.3.7") // For UDP sockets
 }

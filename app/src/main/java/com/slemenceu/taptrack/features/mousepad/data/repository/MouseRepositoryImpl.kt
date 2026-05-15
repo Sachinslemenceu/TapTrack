@@ -1,163 +1,119 @@
 package com.slemenceu.taptrack.features.mousepad.data.repository
 
-import android.content.Context
-import android.content.SharedPreferences
+
 import android.util.Log
+import com.slemenceu.taptrack.features.connection.data.service.ConnectionManager
+import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
 import com.slemenceu.taptrack.features.mousepad.domain.MouseRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
-import java.net.SocketTimeoutException
 import java.nio.ByteBuffer
 
-class MouseRepositoryImpl(private val context: Context) : MouseRepository {
+class MouseRepositoryImpl(
+    private val connectionManager: ConnectionManager
+) : MouseRepository {
+
     private val TAG = "MouseRepositoryLogs"
-    private val PREFS_NAME = "mousepad_config"
-    private val KEY_IP = "server_ip"
-    private val KEY_PORT = "server_port"
-    private val DEFAULT_IP = "192.168.1.4"
-    private val DEFAULT_PORT = 9999
 
-    private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    override val connectionStatus: StateFlow<ConnectionStatus> =
+        connectionManager.connectionStatus
 
-    // Lazy load to allow config changes without restarting
-    private val port: Int
-        get() = prefs.getInt(KEY_PORT, DEFAULT_PORT)
-    private val ip: String
-        get() = prefs.getString(KEY_IP, DEFAULT_IP) ?: DEFAULT_IP
-    private val address: InetAddress
-        get() = try {
-            InetAddress.getByName(ip)
-        } catch (e: Exception) {
-            Log.e(TAG, "Invalid IP address: $ip", e)
-            InetAddress.getByName(DEFAULT_IP)
-        }
-
-    private val mutex = Mutex()
-    private var socket: DatagramSocket? = null
-    private var isOtpAuthenticated = false
+    // 1. PRE-ALLOCATED BUFFERS (Zero-Allocation Strategy)
+    // We define these once at the class level so we don't create
+    // new objects every time the user moves their finger.
+    private val moveBytes = ByteArray(9)
+    private val movePacket = DatagramPacket(moveBytes, moveBytes.size)
+    private val clickBytes = ByteArray(2)
 
     private object Command {
         const val MOVE: Byte = 0
-        const val LEFT_CLICK: Byte = 1
-        const val RIGHT_CLICK: Byte = 2
-        const val CONNECT: Byte = 99
-        const val CONNECT_ACK: Byte = 100.toByte()
-    }
-
-    private fun ensureSocketInitialized() {
-        if (socket == null || socket?.isClosed == true) {
-            Log.d(TAG, "Initializing new DatagramSocket for $ip:$port")
-            socket = DatagramSocket()
-        }
-    }
-
-    override suspend fun setServerConfig(ip: String, port: Int) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "Setting server config - IP: $ip, Port: $port")
-        prefs.edit().apply {
-            putString(KEY_IP, ip)
-            putInt(KEY_PORT, port)
-        }.apply()
-        // Reset socket so it uses new config
-        socket?.close()
-        socket = null
-        isOtpAuthenticated = false
-    }
-
-    override suspend fun connectToMousepad(passcode: Int): Boolean = withContext(Dispatchers.IO) {
-        if (isOtpAuthenticated) {
-            Log.d(TAG, "Already authenticated, skipping connection")
-            return@withContext true
-        }
-
-        try {
-            ensureSocketInitialized()
-            socket?.soTimeout = 2000
-            Log.d(TAG, "Attempting to connect to $ip:$port with passcode: $passcode")
-
-            val buffer = ByteArray(9)
-            buffer[0] = Command.CONNECT
-            intToByte(passcode).copyInto(buffer, 1)
-            val packet = DatagramPacket(buffer, buffer.size, address, port)
-            Log.d(TAG, "Sending connect packet")
-            socket?.send(packet)
-
-            val confirmBuffer = ByteArray(1)
-            val confirmPacket = DatagramPacket(confirmBuffer, confirmBuffer.size)
-            socket?.receive(confirmPacket)
-            Log.d(TAG, "Received connect response: ${confirmBuffer[0]}")
-            val success = confirmBuffer[0] == Command.CONNECT_ACK
-            if (success) {
-                isOtpAuthenticated = true
-                socket?.soTimeout = 0 // reset timeout
-                Log.d(TAG, "Connection successful to $ip:$port")
-            } else {
-                Log.d(TAG, "Connection failed: invalid ack")
-            }
-
-            return@withContext success
-        } catch (e: SocketTimeoutException) {
-            Log.e(TAG, "Connection timeout to $ip:$port", e)
-            false
-        } catch (e: Exception) {
-            Log.e(TAG, "Connection failed to $ip:$port", e)
-            e.printStackTrace()
-            false
-        }
-    }
-
-    override suspend fun connectToMousepadWithConfig(ip: String, port: Int, passcode: Int): Boolean {
-        setServerConfig(ip, port)
-        return connectToMousepad(passcode)
+        const val CLICK: Byte = 1
     }
 
     override suspend fun sendMouseMove(dx: Int, dy: Int) {
-        mutex.withLock {
-            ensureSocketInitialized()
+        // 1. Validation (Keep this on the calling thread for speed)
+        val udp = connectionManager.getUdpSocket() ?: return
+        val target = connectionManager.getTargetAddress() ?: return
+        if (!connectionManager.isConnected) return
 
-            val buffer = ByteBuffer.allocate(9)
-            buffer.put(Command.MOVE)
-            buffer.putInt(dx)
-            buffer.putInt(dy)
-            val packet = DatagramPacket(buffer.array(), buffer.position(), address, port)
-            Log.d(TAG, "Sending mouse move: dx=$dx, dy=$dy")
+        // 2. Prepare data (Keep this on calling thread - Zero Allocation)
+        moveBytes[0] = Command.MOVE
+        moveBytes[1] = (dx shr 24).toByte()
+        moveBytes[2] = (dx shr 16).toByte()
+        moveBytes[3] = (dx shr 8).toByte()
+        moveBytes[4] = dx.toByte()
+        moveBytes[5] = (dy shr 24).toByte()
+        moveBytes[6] = (dy shr 16).toByte()
+        moveBytes[7] = (dy shr 8).toByte()
+        moveBytes[8] = dy.toByte()
 
-            withContext(Dispatchers.IO) {
-                socket?.send(packet)
+        movePacket.address = target
+        movePacket.port = 9999
+
+        // 3. Move to IO Dispatcher for the actual network hit
+        withContext(Dispatchers.IO) {
+            try {
+                udp.send(movePacket)
+            } catch (e: Exception) {
+                // Improved logging to see the ACTUAL error
+                Log.e(TAG, "UDP Send Failed: ${e.localizedMessage}")
             }
         }
     }
 
     override suspend fun sendClick(rightClick: Boolean) {
-        mutex.withLock {
-            ensureSocketInitialized()
+        val tcpStream = connectionManager.getTcpStream() ?: return
+        if (!connectionManager.isConnected) return
 
-            val buffer = ByteBuffer.allocate(1)
-            buffer.put(if (rightClick) Command.RIGHT_CLICK else Command.LEFT_CLICK)
-            val packet = DatagramPacket(buffer.array(), buffer.position(), address, port)
-            Log.d(TAG, "Sending click: right=$rightClick")
+        withContext(Dispatchers.IO) {
+            try {
+                // [CMD, MODIFIER]
+                clickBytes[0] = Command.CLICK
+                clickBytes[1] = if (rightClick) 1.toByte() else 0.toByte()
 
-            withContext(Dispatchers.IO) {
-                socket?.send(packet)
+                tcpStream.write(clickBytes)
+                tcpStream.flush() // Crucial: Send immediately, don't buffer!
+                Log.d(TAG, "Mouse click sent: rightClick=$rightClick")
+            } catch (e: Exception) {
+                connectionManager.setConnectionFailed("Control pipeline lost.")
             }
         }
     }
 
-     override suspend fun disconnectFromMousePad() {
-        withContext(Dispatchers.IO) {
-            Log.d(TAG, "Disconnecting from mousepad")
-            socket?.close()
-            socket = null
-            isOtpAuthenticated = false
+    override suspend fun disconnect() {
+        connectionManager.disconnect()
+    }
+
+    override suspend fun measureUdpLatency(): Long {
+        val udp = connectionManager.getUdpSocket() ?: return -1
+        val target = connectionManager.getTargetAddress() ?: return -1
+
+        val startTime = System.currentTimeMillis()
+        val pingBuffer = ByteBuffer.allocate(9).apply {
+            put(95.toByte()) // Command 95 = Ping
+            putLong(startTime)
+        }.array()
+
+        val packet = DatagramPacket(pingBuffer, pingBuffer.size, target, 9999)
+
+        return withContext(Dispatchers.IO) {
+            try {
+                udp.send(packet)
+
+                // Wait for response (simplified)
+                val responseBuffer = ByteArray(9)
+                val responsePacket = DatagramPacket(responseBuffer, responseBuffer.size)
+                udp.soTimeout = 1000 // Don't wait forever
+                udp.receive(responsePacket)
+
+                val endTime = System.currentTimeMillis()
+                (endTime - startTime) // Round trip time in ms
+            } catch (e: Exception) {
+                Log.e(TAG, "UDP Latency Measurement Failed: ${e.localizedMessage}")
+                -1
+            }
         }
     }
-
-    private fun intToByte(value: Int): ByteArray {
-        return ByteBuffer.allocate(4).putInt(value).array()
-    }
-
 }

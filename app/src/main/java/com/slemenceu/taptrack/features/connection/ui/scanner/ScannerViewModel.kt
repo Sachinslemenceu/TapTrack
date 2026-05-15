@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ScannerViewModel(
-    private val connect: ConnectToPcUseCase
 ): ViewModel() {
 
     private val _surfaceRequest = MutableStateFlow<SurfaceRequest?>(null)
@@ -41,8 +40,7 @@ class ScannerViewModel(
             }
         }
 
-    private val _isFlashOn = MutableStateFlow(false)
-    val isFlashOn = _isFlashOn.asStateFlow()
+
 
 
     private val barcodeScanner = BarcodeScanning.getClient()
@@ -70,22 +68,12 @@ class ScannerViewModel(
         camera = processCameraProvider?.bindToLifecycle(
             lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, cameraPreviewUseCase, analysis
         )
-        camera?.cameraInfo?.torchState?.observe(lifecycleOwner) { torchState ->
-            _isFlashOn.value = torchState == TorchState.ON
-        }
         try {
             awaitCancellation()
         } finally {
             processCameraProvider?.unbindAll()
         }
     }
-    fun extractQrCodeFromImage(
-        image: InputImage,
-        onQrCodeScanned: (String) -> Unit
-    ){
-        processImage(barcodeScanner, image, onQrCodeScanned)
-    }
-
 
     @OptIn(ExperimentalGetImage::class)
     private fun processImageProxy(
@@ -112,44 +100,6 @@ class ScannerViewModel(
                 }
         } else {
             imageProxy.close()
-        }
-    }
-
-    private fun processImage(
-        barcodeScanner: BarcodeScanner,
-        inputImage: InputImage,
-        onQrCodeScanned: (String) -> Unit
-    ){
-        barcodeScanner.process(inputImage)
-            .addOnSuccessListener { barcodes ->
-                if (barcodes.isEmpty()) {
-                    Log.d("ImageExtract", "No QR codes found")
-                    onQrCodeScanned("")
-                }
-                for (barcode in barcodes) {
-                    barcode.rawValue?.let { value ->
-                        onQrCodeScanned(value)
-                    }
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("ImageExtract", "Error scanning QR: ${e.message}")
-            }
-    }
-
-    fun turnFlashLightOnAndOff(){
-        if (camera?.cameraInfo?.hasFlashUnit() == true) {
-            camera?.cameraControl?.enableTorch(!_isFlashOn.value)
-        }
-    }
-
-    fun connectToPcWithQrCode(qrCode: String, onResult: (Boolean) -> Unit){
-        viewModelScope.launch {
-            connect(qrCode).onSuccess {
-                onResult(true)
-            }.onFailure {
-                onResult(false)
-            }
         }
     }
 }

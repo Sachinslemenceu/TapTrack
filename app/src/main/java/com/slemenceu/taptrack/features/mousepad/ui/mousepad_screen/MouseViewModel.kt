@@ -28,7 +28,7 @@ class MouseViewModel(
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
-            repository.disconnectFromMousePad()
+            repository.disconnect()
         }
     }
 }

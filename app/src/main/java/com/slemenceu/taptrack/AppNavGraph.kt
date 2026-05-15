@@ -8,12 +8,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 
 import com.slemenceu.taptrack.features.authentication.ui.login_screen.LoginScreen
 import com.slemenceu.taptrack.features.authentication.ui.login_screen.LoginViewModel
@@ -28,6 +31,7 @@ import com.slemenceu.taptrack.features.mousepad.ui.home_screen.HomeViewModel
 import com.slemenceu.taptrack.features.connection.ui.manual_connection.ManualConnectionScreen
 import com.slemenceu.taptrack.features.connection.ui.scanner.ScannerScreen
 import com.slemenceu.taptrack.features.connection.ui.scanner.ScannerViewModel
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.HomeUiEvent
 import com.slemenceu.taptrack.features.mousepad.ui.mousepad_screen.MouseScreen
 import com.slemenceu.taptrack.features.mousepad.ui.mousepad_screen.MouseViewModel
 import com.slemenceu.taptrack.features.mousepad.ui.options_screen.OptionsScreen
@@ -78,7 +82,7 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                             }
                         },
                         onNavigateToHome = {
-                            navController.navigate(Home) {
+                            navController.navigate(Home()) {
                                 popUpTo(Splash) { inclusive = true }
                                 launchSingleTop = true
                             }
@@ -173,7 +177,7 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
             // Main app flow
 
             navigation<MainGraph>(
-                startDestination = Home,
+                startDestination = Home(),
             ) {
                 composable<Home>(
                     enterTransition = {
@@ -183,8 +187,16 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                         ) +
                                 fadeIn(animationSpec = tween(500))
                     }
-                ) {
+                ) {backStackEntry->
+                    val args = backStackEntry.toRoute<Home>()
+                    val connectionInfo = args.connectionInfo
                     val viewModel = koinViewModel<HomeViewModel>()
+                    LaunchedEffect(Unit) {
+                        if (connectionInfo != null) {
+                            viewModel.onEvent(HomeUiEvent.Connect(connectionInfo))
+                        }
+                    }
+
                     HomeScreen(
                         uiState = viewModel.uiState.collectAsState().value,
                         onEvent = viewModel::onEvent,
@@ -221,8 +233,8 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                             viewModel = scannerViewModel,
                             onBackClicked = { navController.popBackStack() },
                             onNavigateToManualConnection = { navController.navigate(ManualConnection) },
-                            onNavigateToHomeScreen = {
-                                navController.navigate(MainGraph) {
+                            onNavigateToHomeScreen = {connectionInfo ->
+                                navController.navigate(Home(connectionInfo)) {
                                     popUpTo(ConnectionGraph) { inclusive = true }
                                     launchSingleTop = true
                                 }
@@ -245,7 +257,13 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                         }
                     ) {
                         ManualConnectionScreen(
-                            onBackClicked = { navController.popBackStack() }
+                            onBackClicked = { navController.popBackStack() },
+                            onNavigateToHomeScreen = {connectionInfo ->
+                                navController.navigate(Home(connectionInfo)) {
+                                    popUpTo(ConnectionGraph) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
 
@@ -325,7 +343,7 @@ data object Register
 data object ResetPassword
 
 @Serializable
-data object Home
+data class Home(val connectionInfo: String? = null)
 
 @Serializable
 data object Mouse

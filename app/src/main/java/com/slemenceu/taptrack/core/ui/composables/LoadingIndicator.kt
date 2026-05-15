@@ -1,4 +1,4 @@
-package com.slemenceu.taptrack.core.composables
+package com.slemenceu.taptrack.core.ui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

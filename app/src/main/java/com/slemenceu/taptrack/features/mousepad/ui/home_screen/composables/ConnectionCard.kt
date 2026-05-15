@@ -26,21 +26,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.R
-import com.slemenceu.taptrack.core.composables.BackgroundThemeCard
+import com.slemenceu.taptrack.core.ui.composables.BackgroundThemeCard
 import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.models.ConnectionUiState
 import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.lightGrey400
 import com.slemenceu.taptrack.ui.theme.red500
 
 @Composable
 fun ConnectionCard(
-    connectionStatus: ConnectionStatus,
+    connectionStatus: ConnectionUiState,
+    progress: Float = 0f,
     onScanQrClicked: () -> Unit = {},
     onCancel:() -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     BackgroundThemeCard() {
-        val isConnecting = connectionStatus == ConnectionStatus.Connecting
+        val isConnecting = connectionStatus == ConnectionUiState.Connecting
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -48,10 +50,10 @@ fun ConnectionCard(
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
-            if (connectionStatus != ConnectionStatus.Connected) {
+            if (connectionStatus != ConnectionUiState.Connected) {
                 ConnectionStatus(isConnecting = isConnecting)
             }
-            if(connectionStatus == ConnectionStatus.Disconnected){
+            if(connectionStatus == ConnectionUiState.Disconnected){
                 Spacer(Modifier.height(8.dp))
 
                 Icon(
@@ -102,10 +104,12 @@ fun ConnectionCard(
                         )
                     }
                 }
-            } else if (connectionStatus == ConnectionStatus.Connecting){
+            } else if (connectionStatus == ConnectionUiState.Connecting){
                 Spacer(Modifier.height(22.dp))
 
-                ConnectionProgressBar()
+                ConnectionProgressBar(
+                    progress = progress,
+                )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = "Connecting to MacBook Pro",
@@ -133,6 +137,15 @@ fun ConnectionCard(
                     )
                 }
 
+            } else{
+                Text(
+                    text = "Connected",
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier
+                )
+                
+
             }
 
         }
@@ -144,7 +157,7 @@ fun ConnectionCard(
 @Composable
 private fun ConnectionCardPreview1() {
     ConnectionCard(
-        connectionStatus = ConnectionStatus.Connecting
+        connectionStatus = ConnectionUiState.Connecting
     )
 
 }
@@ -152,7 +165,15 @@ private fun ConnectionCardPreview1() {
 @Composable
 private fun ConnectionCardPreview2() {
     ConnectionCard(
-        connectionStatus = ConnectionStatus.Disconnected
+        connectionStatus = ConnectionUiState.Disconnected
+    )
+
+}
+@Preview
+@Composable
+private fun ConnectionCardPreview3() {
+    ConnectionCard(
+        connectionStatus = ConnectionUiState.Connected
     )
 
 }

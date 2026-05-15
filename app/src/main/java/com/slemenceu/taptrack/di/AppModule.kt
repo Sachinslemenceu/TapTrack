@@ -34,14 +34,14 @@ val appModule = module {
     single<MouseRepository> { MouseRepositoryImpl(get()) }
     single<QRScannerRepo> { QRScannerRepoImpl() }
     single { SplashViewModel(get()) }
-    single { HomeViewModel(get(), get(),get(),get()) }
+    single { HomeViewModel(get(),get(),get()) }
     single { LoginViewModel(get()) }
     single { RegisterViewModel(get()) }
     single { ResetPasswordViewModel(get()) }
     single { WifiService(get()) }
     single{ MouseViewModel(get()) }
     single{ OptionsViewModel(get()) }
-    single { ScannerViewModel(get())  }
+    single { ScannerViewModel()  }
 
     single { ConnectToPcUseCase(get()) }
     single<ConnectionRepository> { ConnectionRepositoryImpl(get()) }

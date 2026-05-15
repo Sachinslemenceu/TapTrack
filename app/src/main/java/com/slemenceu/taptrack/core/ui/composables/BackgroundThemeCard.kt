@@ -1,4 +1,4 @@
-package com.slemenceu.taptrack.core.composables
+package com.slemenceu.taptrack.core.ui.composables
 
 import androidx.annotation.ColorLong
 import androidx.compose.foundation.BorderStroke

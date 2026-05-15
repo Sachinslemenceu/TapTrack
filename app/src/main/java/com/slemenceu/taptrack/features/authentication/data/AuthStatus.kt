@@ -12,6 +12,7 @@ val Context.dataStore by preferencesDataStore(name = "auth_pref")
 class AuthStatus(val context: Context) {
 
     val AUTH_KEY = booleanPreferencesKey("auth_key")
+    val FIRST_LOGIN_KEY = booleanPreferencesKey("first_login_key")
 
     suspend fun saveAuthStatus(isLoggedIn: Boolean){
         context.dataStore.edit {
@@ -21,6 +22,17 @@ class AuthStatus(val context: Context) {
     fun readAuthStatus(): Flow<Boolean> {
         return context.dataStore.data.map {
             it[AUTH_KEY] ?: false
+        }
+    }
+
+    suspend fun saveFirstLoginStatus(hasLoggedInBefore: Boolean){
+        context.dataStore.edit {
+            it[FIRST_LOGIN_KEY] = hasLoggedInBefore
+        }
+    }
+    fun readFirstLoginStatus(): Flow<Boolean> {
+        return context.dataStore.data.map {
+            it[FIRST_LOGIN_KEY] ?: false
         }
     }
 }

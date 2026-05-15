@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 class ConnectToPcUseCase(
     private val repo: ConnectionRepository
 ) {
-    suspend operator fun invoke(qr: String): Result<Flow<ConnectionStatus>>{
+    suspend operator fun invoke(qr: String): Result<Int>{
         return try {
             val parts = qr.split(":")
             if (parts.size != 3) {
@@ -21,9 +21,7 @@ class ConnectToPcUseCase(
             val ipAddress = parts[0]
             val portNo = parts[1].toInt()
             val passcode = parts[2].toInt()
-
-            repo.connect(ipAddress, portNo, passcode)
-            Result.success(repo.connectionStatus)
+            repo.connect(ipAddress, portNo)
         } catch (e: Exception) {
             Result.failure(e)
         }

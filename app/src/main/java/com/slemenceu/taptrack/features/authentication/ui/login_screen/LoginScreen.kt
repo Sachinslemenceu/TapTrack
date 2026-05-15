@@ -39,10 +39,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.R
-import com.slemenceu.taptrack.core.composables.MyPrimaryButton
+import com.slemenceu.taptrack.core.ui.composables.MyPrimaryButton
 import com.slemenceu.taptrack.features.authentication.ui.splash_screen.composable.MyTextField
-import com.slemenceu.taptrack.core.composables.AppTopBar
-import com.slemenceu.taptrack.core.composables.LoadingIndicator
+import com.slemenceu.taptrack.core.ui.composables.AppTopBar
+import com.slemenceu.taptrack.core.ui.composables.LoadingIndicator
 import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.darkBlue900
 import com.slemenceu.taptrack.ui.theme.green500

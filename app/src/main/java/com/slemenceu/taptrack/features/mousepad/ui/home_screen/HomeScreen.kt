@@ -34,11 +34,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.zxing.integration.android.IntentIntegrator
-import com.slemenceu.taptrack.core.composables.MyPrimaryButton
-import com.slemenceu.taptrack.core.composables.BackgroundThemeCard
-import com.slemenceu.taptrack.core.composables.MySecondaryButton
+import com.slemenceu.taptrack.core.ui.composables.MyPrimaryButton
+import com.slemenceu.taptrack.core.ui.composables.BackgroundThemeCard
+import com.slemenceu.taptrack.core.ui.composables.MySecondaryButton
 import com.slemenceu.taptrack.core.utils.PermissionManager
 import com.slemenceu.taptrack.core.utils.findActivity
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.ConnectionCard
 import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.FirstTimeUserHomeSection
 import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.darkBlue900
@@ -54,7 +55,7 @@ fun HomeScreen(
     uiState: HomeUiState,
     onEvent: (HomeUiEvent) -> Unit,
     uiEffect: SharedFlow<HomeUiEffect>,
-    onNavigateToScannerScreen:()-> Unit,
+    onNavigateToScannerScreen: () -> Unit,
     navigateToMousepad: () -> Unit,
     navigateToPcGuide: () -> Unit,
     navigateToOptions: () -> Unit
@@ -74,7 +75,6 @@ fun HomeScreen(
             Log.d(log, result.toString())
             onEvent(HomeUiEvent.onPermissionResult(result))
             if (result.all { it.value }) {
-                onEvent(HomeUiEvent.loadInitialWifiInfo)
             }
         }
     )
@@ -94,63 +94,22 @@ fun HomeScreen(
 
     val height = LocalConfiguration.current.screenHeightDp.dp
     val width = LocalConfiguration.current.screenWidthDp.dp
-    val expandedHeight = height * 0.8f
-    val peekHeight = height * 0.6f
-
-//    val scaffoldState = rememberBottomSheetScaffoldState()
-//    val isExpanded = scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded
-
-//    val size by animateFloatAsState(
-//        targetValue = if (isExpanded) 0f else 1f,
-//        animationSpec = tween(
-//            durationMillis = 500,
-//            easing = LinearEasing,
-//        ),
-//    )
-//    val move by animateFloatAsState(
-//        targetValue = if (isExpanded) 0f else 100f,
-//        animationSpec = tween(
-//            durationMillis = 300,
-//            easing = LinearEasing,
-//        ),
-//    )
-//    val scale by animateFloatAsState(
-//        targetValue = if (isExpanded) 1f else 0f,
-//        animationSpec = tween(
-//            durationMillis = 300,
-//            easing = LinearEasing,
-//        ),
-//    )
-//    val degree by animateFloatAsState(
-//        targetValue = if (isExpanded) 360f else 0f,
-//        animationSpec = tween(
-//            durationMillis = 500,
-//            easing = LinearEasing,
-//        ),
-//    )
     LaunchedEffect(Unit) {
-        if(!PermissionManager.isAllPermissionGranted(context)) {
-                permissionResultLauncher.launch(
-                    permissions
-                )
+        if (!PermissionManager.isAllPermissionGranted(context)) {
+            permissionResultLauncher.launch(
+                permissions
+            )
+        }
+        uiEffect.collect {
+            when (it) {
+
+                HomeUiEffect.NavigateToMousepad -> navigateToMousepad()
+
+
+                HomeUiEffect.NavigateToPcGuide -> navigateToPcGuide()
+                HomeUiEffect.NavigateToOptions -> navigateToOptions()
             }
-        onEvent(HomeUiEvent.startWifiTrackingEvent)
-            uiEffect.collect {
-                when (it) {
-
-                    HomeUiEffect.NavigateToMousepad -> navigateToMousepad()
-                    is HomeUiEffect.onQrScanClicked -> {
-                        launcher.launch(it.intent)
-                    }
-
-                    HomeUiEffect.onQrScanCancelled -> {
-                        Toast.makeText(context, "Scanning Cancelled", Toast.LENGTH_SHORT).show()
-                    }
-
-                    HomeUiEffect.NavigateToPcGuide -> navigateToPcGuide()
-                    HomeUiEffect.NavigateToOptions -> navigateToOptions()
-                }
-            }
+        }
     }
 
     Column(
@@ -208,144 +167,40 @@ fun HomeScreen(
 
         }
         Spacer(Modifier.height(15.dp))
-        if (uiState.isFirstTime) {
-            BackgroundThemeCard() {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    FirstTimeUserHomeSection()
-
-                }
-            }
-            Spacer(Modifier.height(15.dp))
-            MyPrimaryButton(
-                text = "Scan QR Code to Begin"
-            ) {
+//        if (uiState.isFirstTime) {
+//            BackgroundThemeCard() {
+//                Column(
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                ) {
+//                    FirstTimeUserHomeSection()
+//
+//                }
+//            }
+//            Spacer(Modifier.height(15.dp))
+//            MyPrimaryButton(
+//                text = "Scan QR Code to Begin"
+//            ) {
+//                onNavigateToScannerScreen()
+//            }
+//            Spacer(Modifier.height(15.dp))
+//            MySecondaryButton(
+//                "Download Taptrack PC app"
+//            ) { }
+//        } else {
+        ConnectionCard(
+            connectionStatus = uiState.connectionState,
+            progress = uiState.connectionprogress,
+            onScanQrClicked = {
                 onNavigateToScannerScreen()
             }
-            Spacer(Modifier.height(15.dp))
-            MySecondaryButton(
-                "Download Taptrack PC app"
-            ) { }
-        } else {
+        )
+//        }
 
-        }
 
     }
-//
-//    BottomSheetScaffold(
-//        sheetContent = {
-//            BottomSheetContent(
-//                screenWidth = width,
-//                expandedHeight = expandedHeight,
-//                isConnected = uiState.mousepad.isConnected,
-//                onNavigateToMousepad = {
-//                    onEvent(HomeUiEvent.onNavigateToMousepad)
-//                },
-//                onConnectToMousepad = {
-//                    activity?.let { onEvent(HomeUiEvent.onOpenScanner(it)) }
-//                },
-//                onPcGuideClicked = {
-//                    onEvent(HomeUiEvent.onPcGuideClicked)
-//                },
-//                onOptionsClicked = {
-//                    onEvent(HomeUiEvent.onOptionsClicked)
-//                }
-//            )
-//        },
-//        scaffoldState = scaffoldState,
-//        sheetPeekHeight = peekHeight,
-//        containerColor = violet40,
-//        sheetContainerColor = Color.White,
-//
-//    ) {
-//        LaunchedEffect(Unit) {
-//            if(!PermissionManager.isAllPermissionGranted(context)) {
-//                permissionResultLauncher.launch(
-//                    permissions
-//                )
-//            }
-//            onEvent(HomeUiEvent.startWifiTrackingEvent)
-//            uiEffect.collect {
-//                when (it) {
-//
-//                    HomeUiEffect.NavigateToMousepad -> navigateToMousepad()
-//                    is HomeUiEffect.onQrScanClicked -> {
-//                        launcher.launch(it.intent)
-//                    }
-//
-//                    HomeUiEffect.onQrScanCancelled -> {
-//                        Toast.makeText(context, "Scanning Cancelled", Toast.LENGTH_SHORT).show()
-//                    }
-//
-//                    HomeUiEffect.NavigateToPcGuide -> navigateToPcGuide()
-//                    HomeUiEffect.NavigateToOptions -> navigateToOptions()
-//                }
-//            }
-//        }
-//        Box(
-//            modifier = modifier
-//                .padding(it)
-//                .fillMaxSize()
-//        ) {
-//            Image(
-//                imageVector = ImageVector.vectorResource(R.drawable.cloudvector),
-//                contentDescription = "Cloud Image",
-//                modifier = Modifier
-//                    .width(width)
-//                    .height(height / 2)
-//                    .padding(top = height / 18)
-//                    .offset(x = width / 5)
-//                    .align(Alignment.TopCenter),
-//                contentScale = ContentScale.FillBounds,
-//            )
-//
-//            Image(
-//                imageVector = ImageVector.vectorResource(R.drawable.dot_icon),
-//                contentDescription = "dot Icon",
-//                modifier = Modifier
-//                    .padding(top = height / 10)
-//                    .offset(x = width / 7, y = move.dp)
-//                    .scale(scale)
-//                    .align(Alignment.TopCenter),
-//                contentScale = ContentScale.FillBounds,
-//            )
-//            Image(
-//                imageVector = ImageVector.vectorResource(R.drawable.duolink),
-//                contentDescription = "Duo Link",
-//                modifier = Modifier
-//                    .align(Alignment.BottomEnd)
-//                    .padding(end = 50.dp)
-//                    .width(width / 2)
-//                    .scale(size)
-//                    .rotate(degree),
-//                contentScale = ContentScale.FillBounds,
-//            )
-//            Card(
-//                modifier = Modifier
-//                    .padding(top = 50.dp, start = 30.dp),
-//                colors = CardDefaults.cardColors(
-//                    containerColor = violet30,
-//                )
-//            ) {
-//                val wifiIcon = if (uiState.isConnected) R.drawable.wifi_icon else R.drawable.wifi_off_icon
-//                IconButton(
-//                    onClick = {
-//                        onEvent(HomeUiEvent.onOpenWifiSettings)
-//                    },
-//                ) {
-//                    Icon(
-//                        imageVector = ImageVector.vectorResource(wifiIcon),
-//                        contentDescription = "wifi connected icon",
-//                        tint = if (uiState.isConnected) lightGreen else Color.Red,
-//                        modifier = Modifier.size(40.dp)
-//                    )
-//                }
-//            }
-//        }
-//    }
+
 
 }
 

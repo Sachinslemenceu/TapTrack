@@ -32,6 +32,7 @@ class SplashViewModel(
             is SplashUiEvent.OnAnimationDone -> {
                 viewModelScope.launch {
                     if (isLoggedIn.value == true) {
+//                        authRepo.saveFirstLoginStatus(true)
                         sendEffect(SplashUiEffect.NavigateToHome)
                     } else {
                         _uiState.value = _uiState.value.copy(isAnimationFinished = true)

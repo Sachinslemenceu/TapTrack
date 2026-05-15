@@ -1,4 +1,4 @@
-package com.slemenceu.taptrack.core.composables
+package com.slemenceu.taptrack.core.ui.composables
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
