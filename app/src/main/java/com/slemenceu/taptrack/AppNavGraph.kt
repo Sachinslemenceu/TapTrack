@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -32,11 +31,11 @@ import com.slemenceu.taptrack.features.connection.ui.manual_connection.ManualCon
 import com.slemenceu.taptrack.features.connection.ui.scanner.ScannerScreen
 import com.slemenceu.taptrack.features.connection.ui.scanner.ScannerViewModel
 import com.slemenceu.taptrack.features.mousepad.ui.home_screen.HomeUiEvent
-import com.slemenceu.taptrack.features.mousepad.ui.mousepad_screen.MouseScreen
-import com.slemenceu.taptrack.features.mousepad.ui.mousepad_screen.MouseViewModel
+import com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen.TrackpadViewModel
 import com.slemenceu.taptrack.features.mousepad.ui.options_screen.OptionsScreen
 import com.slemenceu.taptrack.features.mousepad.ui.options_screen.OptionsViewModel
 import com.slemenceu.taptrack.features.mousepad.ui.pc_guide_screen.PcGuideScreen
+import com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen.TrackpadScreen
 import com.slemenceu.taptrack.ui.theme.darkBlue900
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -44,7 +43,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AppNavGraph(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    val mouseViewModel = koinViewModel<MouseViewModel>()
+    val trackpadViewModel = koinViewModel<TrackpadViewModel>()
 
     Scaffold(
         containerColor = darkBlue900
@@ -191,9 +190,10 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                     val args = backStackEntry.toRoute<Home>()
                     val connectionInfo = args.connectionInfo
                     val viewModel = koinViewModel<HomeViewModel>()
-                    LaunchedEffect(Unit) {
-                        if (connectionInfo != null) {
-                            viewModel.onEvent(HomeUiEvent.Connect(connectionInfo))
+
+                    LaunchedEffect(connectionInfo) {
+                        connectionInfo?.let {
+                            viewModel.onEvent(HomeUiEvent.Connect(it))
                         }
                     }
 
@@ -201,9 +201,7 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                         uiState = viewModel.uiState.collectAsState().value,
                         onEvent = viewModel::onEvent,
                         uiEffect = viewModel.uiEffect,
-                        navigateToMousepad = { navController.navigate(Mouse) },
-                        navigateToPcGuide = { navController.navigate(PCGuide) },
-                        navigateToOptions = { navController.navigate(Options) },
+                        onNavigateToMousepad = { navController.navigate(Mouse) },
                         onNavigateToScannerScreen = { navController.navigate(ConnectionGraph) },
                     )
                 }
@@ -270,8 +268,9 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 }
 
                 composable<Mouse> {
-                    MouseScreen(
-                        onEvent = mouseViewModel::onEvent,
+                    TrackpadScreen(
+                        onEvent = trackpadViewModel::onEvent,
+                        onNavigateToHome = { navController.navigate(Home()) }
                     )
                 }
                 composable<PCGuide>(

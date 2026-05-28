@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -28,32 +30,39 @@ import androidx.compose.ui.unit.sp
 import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.core.ui.composables.BackgroundThemeCard
 import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
-import com.slemenceu.taptrack.features.mousepad.ui.home_screen.models.ConnectionUiState
+import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStep
+import com.slemenceu.taptrack.ui.theme.blue500
+import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.lightGrey400
 import com.slemenceu.taptrack.ui.theme.red500
 
 @Composable
 fun ConnectionCard(
-    connectionStatus: ConnectionUiState,
-    progress: Float = 0f,
-    onScanQrClicked: () -> Unit = {},
-    onCancel:() -> Unit = {},
+    connectionStatus: ConnectionStatus,
+    latency: Int = 0,
+    onScanQrClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
+    onOpenTrackpadClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BackgroundThemeCard() {
-        val isConnecting = connectionStatus == ConnectionUiState.Connecting
-
+    val borderColor = when (connectionStatus) {
+        ConnectionStatus.Connected -> green500.copy(alpha = 0.22f)
+        is ConnectionStatus.Connecting -> blue500.copy(alpha = 0.22f)
+        ConnectionStatus.Disconnected -> darkBlue800
+        is ConnectionStatus.Failed -> darkBlue800
+    }
+    BackgroundThemeCard(
+        borderColor = borderColor,
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(14.dp)
         ) {
-            if (connectionStatus != ConnectionUiState.Connected) {
-                ConnectionStatus(isConnecting = isConnecting)
-            }
-            if(connectionStatus == ConnectionUiState.Disconnected){
+            ConnectionStatus(connectionStatus = connectionStatus)
+            if (connectionStatus == ConnectionStatus.Disconnected) {
                 Spacer(Modifier.height(8.dp))
 
                 Icon(
@@ -104,11 +113,11 @@ fun ConnectionCard(
                         )
                     }
                 }
-            } else if (connectionStatus == ConnectionUiState.Connecting){
+            } else if (connectionStatus is ConnectionStatus.Connecting) {
                 Spacer(Modifier.height(22.dp))
 
                 ConnectionProgressBar(
-                    progress = progress,
+//                    progress = progress,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -127,25 +136,59 @@ fun ConnectionCard(
                 )
                 Spacer(Modifier.height(8.dp))
                 TextButton(
-                    onClick = onCancel
+                    onClick = onCancelClicked
                 ) {
                     Text(
                         text = "Cancel",
                         fontSize = 13.sp,
-                        color = red500 ,
+                        color = red500,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
-            } else{
-                Text(
-                    text = "Connected",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    modifier = Modifier
+            } else {
+                Spacer(Modifier.height(7.dp))
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.signal_icon),
+                    contentDescription = "Signal Icon",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(40.dp)
                 )
-                
-
+                Text(
+                    text = "${latency}ms",
+                    fontSize = 54.sp,
+                    color = green500,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(Modifier.height(24.dp))
+                Button(
+                    onClick = onOpenTrackpadClicked,
+                    modifier = modifier
+                        .height(50.dp)
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = green500
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Open Trackpad",
+                            fontSize = 15.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "open Trackpad",
+                            tint = Color.Black,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
 
         }
@@ -157,23 +200,58 @@ fun ConnectionCard(
 @Composable
 private fun ConnectionCardPreview1() {
     ConnectionCard(
-        connectionStatus = ConnectionUiState.Connecting
+        connectionStatus = ConnectionStatus.Connected,
+        onScanQrClicked = {},
+        onCancelClicked = {},
+        onOpenTrackpadClicked = {}
     )
 
 }
+
 @Preview
 @Composable
 private fun ConnectionCardPreview2() {
     ConnectionCard(
-        connectionStatus = ConnectionUiState.Disconnected
+        connectionStatus = ConnectionStatus.Connecting(),
+        onScanQrClicked = {},
+        onCancelClicked = {},
+        onOpenTrackpadClicked = {}
     )
 
 }
+
 @Preview
 @Composable
 private fun ConnectionCardPreview3() {
     ConnectionCard(
-        connectionStatus = ConnectionUiState.Connected
+        connectionStatus = ConnectionStatus.Connecting(step = ConnectionStep.ESTABLISHING_UDP_CONNECTION),
+        onScanQrClicked = {},
+        onCancelClicked = {},
+        onOpenTrackpadClicked = {}
+    )
+
+}
+
+@Preview
+@Composable
+private fun ConnectionCardPreview4() {
+    ConnectionCard(
+        connectionStatus = ConnectionStatus.Connecting(step = ConnectionStep.VERIFYING_LATENCY),
+        onScanQrClicked = {},
+        onCancelClicked = {},
+        onOpenTrackpadClicked = {}
+    )
+
+}
+
+@Preview
+@Composable
+private fun ConnectionCardPreview5() {
+    ConnectionCard(
+        connectionStatus = ConnectionStatus.Disconnected,
+        onScanQrClicked = {},
+        onCancelClicked = {},
+        onOpenTrackpadClicked = {}
     )
 
 }

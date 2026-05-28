@@ -20,6 +20,8 @@ class ConnectionRepositoryImpl(
     override val connectionStatus: StateFlow<ConnectionStatus> =
         connectionManager.connectionStatus
 
+    override val latency: StateFlow<Int?> = connectionManager.latency
+
 
     override suspend fun connect(ip: String, port: Int): Result<Int> {
         return connectionManager.connect(ip, port)

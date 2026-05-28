@@ -11,6 +11,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.Logger
 import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceRequest
 import androidx.camera.core.TorchState
@@ -30,7 +31,6 @@ import com.slemenceu.taptrack.features.connection.domain.usecases.GetConnectionS
 import com.slemenceu.taptrack.features.mousepad.domain.HomeRepository
 import com.slemenceu.taptrack.features.mousepad.domain.MouseRepository
 import com.slemenceu.taptrack.features.mousepad.domain.QRScannerRepo
-import com.slemenceu.taptrack.features.mousepad.ui.home_screen.models.ConnectionUiState
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,7 +48,6 @@ class HomeViewModel(
     private val connectToPc: ConnectToPcUseCase,
     private val getConnectionStatus: GetConnectionStatusUseCase,
     private val authStatus: AuthStatus,
-    private val mouseRepository: MouseRepository,
 ) : ViewModel() {
     private val TAG = "HomeViewModel"
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -66,15 +65,22 @@ class HomeViewModel(
                     it.copy(isFirstTime = !hasLoggedInBefore)
                 }
             }
+
+        }
+        viewModelScope.launch {
+            getConnectionStatus().collect { connectionStatus ->
+                Log.d(TAG, "The Connection Status is : $connectionStatus")
+
+                _uiState.update {
+                    it.copy(connectionStatus = connectionStatus)
+                }
+            }
         }
     }
 
+
     fun onEvent(event: HomeUiEvent) {
         when (event) {
-            HomeUiEvent.onOpenWifiSettings -> {}
-            HomeUiEvent.startWifiTrackingEvent -> {}
-            HomeUiEvent.stopWifiTrackingEvent -> {}
-            HomeUiEvent.loadInitialWifiInfo -> {}
             is HomeUiEvent.onPermissionResult -> onPermissionResult(event.result)
             HomeUiEvent.onNavigateToMousepad -> {
                 viewModelScope.launch {
@@ -91,7 +97,6 @@ class HomeViewModel(
 
             HomeUiEvent.onScanCancelled -> {
                 viewModelScope.launch {
-                    sendEffect(HomeUiEffect.onQrScanCancelled)
                 }
             }
 
@@ -109,21 +114,16 @@ class HomeViewModel(
 
             is HomeUiEvent.Connect -> {
                 viewModelScope.launch {
-                    _uiState.update { it.copy(connectionState = ConnectionUiState.Connecting) }
                     connectToPc(event.connectionInfo)
-                        .onSuccess {
-                            Log.d(TAG,"The connection Sucessful")
-                            val latency = mouseRepository.measureUdpLatency()
-                            var progress = 0f
-                            while (progress!=1f){
-                                _uiState.update { it.copy(connectionprogress = progress) }
-                                delay(100)
-                                progress += 0.1f
+                        .onSuccess {latency->
+                            Log.d(TAG,"The latency is $latency")
+                            _uiState.update {
+                                it.copy(latency = latency)
                             }
-                            _uiState.update { it.copy(connectionState = ConnectionUiState.Connected, latency = latency.toInt()) }
                         }
                         .onFailure {
-                            _uiState.update { it.copy(connectionState = ConnectionUiState.Disconnected) }
+                            Log.d(TAG, "The error is $it")
+//                            _uiState.update { it.copy(connectionStatus = ConnectionStatus.Disconnected) }
                         }
                 }
             }

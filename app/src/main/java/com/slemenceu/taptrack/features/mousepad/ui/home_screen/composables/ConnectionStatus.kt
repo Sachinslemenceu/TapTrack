@@ -18,19 +18,45 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
 import com.slemenceu.taptrack.ui.theme.blue500
+import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.red500
 
 @Composable
 fun ConnectionStatus(
-    isConnecting: Boolean,
+    connectionStatus: ConnectionStatus,
     modifier: Modifier = Modifier
 ) {
-    val borderColor =
-        if (isConnecting) blue500.copy(alpha = 0.22f) else red500.copy(alpha = 0.22f)
-    val fillColor =
-        if (isConnecting) blue500.copy(alpha = 0.10f) else red500.copy(alpha = 0.10f)
-    val textColor = if (isConnecting) blue500 else red500
+    val borderColor = when(connectionStatus){
+        ConnectionStatus.Connected -> green500.copy(alpha = 0.22f)
+        is ConnectionStatus.Connecting -> blue500.copy(alpha = 0.22f)
+        ConnectionStatus.Disconnected -> red500.copy(alpha = 0.22f)
+        is ConnectionStatus.Failed -> red500.copy(alpha = 0.22f)
+    }
+
+    val fillColor = when(connectionStatus){
+        ConnectionStatus.Connected -> green500.copy(alpha = 0.10f)
+        is ConnectionStatus.Connecting -> blue500.copy(alpha = 0.10f)
+        ConnectionStatus.Disconnected -> red500.copy(alpha = 0.10f)
+        is ConnectionStatus.Failed -> red500.copy(alpha = 0.10f)
+    }
+
+
+
+    val textColor = when(connectionStatus){
+        ConnectionStatus.Connected -> green500
+        is ConnectionStatus.Connecting -> blue500
+        ConnectionStatus.Disconnected -> red500
+        is ConnectionStatus.Failed -> red500
+    }
+    val text = when(connectionStatus){
+        ConnectionStatus.Connected -> "Connected"
+        is ConnectionStatus.Connecting -> "Connecting"
+        ConnectionStatus.Disconnected -> "Not Connected"
+        is ConnectionStatus.Failed -> "Failed"
+    }
+
     Surface(
         color = fillColor,
         border = BorderStroke(1.dp, borderColor),
@@ -50,7 +76,7 @@ fun ConnectionStatus(
             ) { }
 
             Text(
-                text = if (isConnecting) "Connecting..." else "Not Connected",
+                text = text,
                 color = textColor,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
@@ -63,12 +89,17 @@ fun ConnectionStatus(
 @Preview
 @Composable
 private fun ConnectionStatusPreview1() {
-    ConnectionStatus(isConnecting = true)
+    ConnectionStatus(ConnectionStatus.Connected)
 }
 
 @Preview
 @Composable
 private fun ConnectionStatusPreview2() {
-    ConnectionStatus(isConnecting = false)
+    ConnectionStatus(ConnectionStatus.Connecting())
+}
+@Preview
+@Composable
+private fun ConnectionStatusPreview3() {
+    ConnectionStatus(ConnectionStatus.Disconnected)
 }
 

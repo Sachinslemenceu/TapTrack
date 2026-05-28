@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface ConnectionRepository {
 
     val connectionStatus: StateFlow<ConnectionStatus>
+    val latency: StateFlow<Int?>
     suspend fun connect(ip: String, port: Int): Result<Int>
     suspend fun disconnect()
 }

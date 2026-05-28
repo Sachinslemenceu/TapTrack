@@ -4,6 +4,7 @@ package com.slemenceu.taptrack.features.connection.data.service
 import android.util.Log
 import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
 import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStep
+import com.slemenceu.taptrack.features.mousepad.data.repository.MouseRepositoryImpl.Command
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,6 +34,8 @@ class ConnectionManager {
         MutableStateFlow<ConnectionStatus>(ConnectionStatus.Disconnected)
     val connectionStatus = _connectionStatus.asStateFlow()
 
+    private val _latency = MutableStateFlow<Int?>(null)
+    val latency = _latency.asStateFlow()
     val isConnected: Boolean
         get() = tcpSocket?.isClosed == false && _connectionStatus.value is ConnectionStatus.Connected
 
@@ -40,6 +43,21 @@ class ConnectionManager {
     fun getTcpStream() = tcpOutputStream
     fun getUdpSocket() = udpSocket
     fun getTargetAddress() = targetAddress
+    private val moveBytes = ByteArray(9)
+    private val movePacket = DatagramPacket(moveBytes, moveBytes.size)
+    private val clickBytes = ByteArray(2)
+
+    @Volatile
+    private var latestDx = 0
+
+    @Volatile
+    private var latestDy = 0
+    private var senderJob: Job? = null
+
+    private object Command {
+        const val MOVE: Byte = 0
+        const val CLICK: Byte = 1
+    }
 
 
     suspend fun connect(host: String, port: Int): Result<Int> {
@@ -65,48 +83,111 @@ class ConnectionManager {
                 // 3. Optional: Perform Handshake via TCP (More reliable than UDP handshake)
                 // For now, we assume connection success if the TCP socket opens
 
-                _connectionStatus.value = ConnectionStatus.Connected
 
                 // 4. Start Monitoring Loop
                 connectionScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-                startTcpMonitor()
+//                startTcpMonitor()
                 val latency = measureUDPLatency()
                 delay(1000)
-                _connectionStatus.value = ConnectionStatus.Connecting(step = ConnectionStep.ESTABLISHING_UDP_CONNECTION)
+                _connectionStatus.value =
+                    ConnectionStatus.Connecting(step = ConnectionStep.ESTABLISHING_UDP_CONNECTION)
                 delay(1000)
-                _connectionStatus.value = ConnectionStatus.Connecting(step = ConnectionStep.VERIFYING_LATENCY)
+                _connectionStatus.value =
+                    ConnectionStatus.Connecting(step = ConnectionStep.VERIFYING_LATENCY)
                 delay(1000)
-                if (latency == -1L) Result.failure(Exception("UDP Latency Measurement Failed")) else Result.success(latency.toInt())
+                _connectionStatus.value = ConnectionStatus.Connected
+                if (latency == -1L) {
+                    return@withContext Result.failure(
+                        Exception("UDP Latency Measurement Failed")
+                    )
+                }
+                _connectionStatus.value = ConnectionStatus.Connected
+                startHeartbeatMonitor()
+                startLatencyMonitor()
+                startRealtimeSender()
+                return@withContext Result.success(latency.toInt())
             } catch (e: Exception) {
                 val error = e.localizedMessage ?: "Connection failed"
                 Log.e(TAG, "Connection failed: $error")
                 setConnectionFailed(error)
-                Result.failure(e)
+                return@withContext Result.failure(e)
+            }
+        }
+    }
+    private fun startHeartbeatMonitor() {
+
+        connectionScope?.launch {
+
+            try {
+
+                tcpSocket?.soTimeout = 5000
+
+                val outputStream = tcpSocket?.getOutputStream()
+                val inputStream = tcpSocket?.getInputStream()
+
+                val ping = byteArrayOf(95)
+                val expectedPong = 96.toByte()
+
+                var retry = 0
+
+                while (isActive && isConnected) {
+
+                    // Send PING
+                    outputStream?.write(ping)
+                    outputStream?.flush()
+
+                    val inputBuffer = ByteArray(1)
+
+                    val bytesRead = inputStream?.read(inputBuffer)
+
+                    // Socket closed
+                    if (bytesRead == -1) {
+                        setConnectionFailed("Server disconnected.")
+                        break
+                    }
+
+                    val response = inputBuffer[0]
+
+                    // Valid pong
+                    if (response == expectedPong) {
+
+                        retry = 0
+                        Log.d(TAG, "ping-pong: success")
+
+                    } else {
+
+                        retry++
+
+                        Log.e(TAG, "Invalid heartbeat response")
+
+                        if (retry >= 3) {
+                            setConnectionFailed("Heartbeat failed.")
+                            break
+                        }
+                    }
+
+                    delay(2000)
+                }
+
+            } catch (e: Exception) {
+
+                if (isConnected) {
+                    setConnectionFailed("Connection lost: ${e.message}")
+                }
             }
         }
     }
 
-    /**
-     * Watches the TCP socket. If the server closes the connection or the network drops,
-     * this loop will terminate, triggering a cleanup.
-     */
-    private fun startTcpMonitor() {
+    private fun startLatencyMonitor() {
         connectionScope?.launch {
-            try {
-                val inputStream = tcpSocket?.getInputStream()
-                val buffer = ByteArray(1)
-                while (isActive && isConnected) {
-                    // read() blocks until data is available or socket closes
-                    if (inputStream?.read(buffer) == -1) {
-                        setConnectionFailed("Server closed the connection.")
-                        break
-                    }
-                }
-            } catch (e: Exception) {
-                if (isConnected) setConnectionFailed("Pipeline lost: ${e.message}")
+            while (isConnected) {
+                val currentLatency = measureUDPLatency()
+                _latency.value = currentLatency.toInt()
+                delay(15000)
             }
         }
     }
+
 
     fun setConnectionFailed(message: String) {
         _connectionStatus.value = ConnectionStatus.Failed(message)
@@ -150,8 +231,65 @@ class ConnectionManager {
             val endTime = System.currentTimeMillis()
             endTime - startTime
         } catch (e: Exception) {
-            Log.e(TAG, "UDP Latency Measurement Failed: ${e.localizedMessage}")
+            Log.e(TAG, "UDP Latency Measurement Failed: ${e}")
             -1
+        }
+    }
+
+    fun updateMousePosition(dx: Int, dy: Int) {
+        latestDx = dx
+        latestDy = dy
+    }
+
+    private fun startRealtimeSender() {
+
+        senderJob?.cancel()
+
+        senderJob = CoroutineScope(
+            Dispatchers.IO + SupervisorJob()
+        ).launch {
+
+            val udp = getUdpSocket() ?: return@launch
+
+            val target = getTargetAddress() ?: return@launch
+
+            while (isActive) {
+
+                try {
+                    val dx = latestDx
+                    val dy = latestDy
+
+                    if (dx != 0 || dy != 0) {
+
+                        moveBytes[0] = Command.MOVE
+
+                        moveBytes[1] = (dx shr 24).toByte()
+                        moveBytes[2] = (dx shr 16).toByte()
+                        moveBytes[3] = (dx shr 8).toByte()
+                        moveBytes[4] = dx.toByte()
+
+                        moveBytes[5] = (dy shr 24).toByte()
+                        moveBytes[6] = (dy shr 16).toByte()
+                        moveBytes[7] = (dy shr 8).toByte()
+                        moveBytes[8] = dy.toByte()
+
+                        movePacket.address = target
+                        movePacket.port = 9999
+
+                        udp.send(movePacket)
+
+                        // CRITICAL
+                        latestDx = 0
+                        latestDy = 0
+                    }
+
+                } catch (e: Exception) {
+
+                    Log.e(TAG, "UDP Send Failed", e)
+                }
+
+                delay(8) // ~120Hz
+            }
         }
     }
 }

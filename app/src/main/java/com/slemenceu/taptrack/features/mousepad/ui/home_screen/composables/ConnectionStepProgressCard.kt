@@ -37,18 +37,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.slemenceu.taptrack.core.ui.composables.BackgroundThemeCard
+import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
+import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStep
 import com.slemenceu.taptrack.ui.theme.blue500
 import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.lightGrey300
 import kotlinx.coroutines.delay
 
-enum class ConnectionStep {
-    QR_SCANNED,
-    ESTABLISHING_CONNECTION,
-    VERIFYING_LATENCY,
-    COMPLETED
-}
 
 @Composable
 fun ConnectionStepProgressCard(
@@ -61,16 +57,16 @@ fun ConnectionStepProgressCard(
         ) {
             ConnectionStep.entries.forEach { step ->
                 // Skip displaying the COMPLETED step itself
-                if (step == ConnectionStep.COMPLETED) return@forEach
+//                if (step == ConnectionStep.COMPLETED) return@forEach
 
                 val isStepCompleted = when {
-                    currentStep == ConnectionStep.COMPLETED -> true // All steps are completed when done
                     step.ordinal < currentStep.ordinal -> true // Steps before current are completed
+                    currentStep == ConnectionStep.VERIFYING_LATENCY && step == ConnectionStep.VERIFYING_LATENCY -> false
                     else -> false
                 }
                 val isStepCurrent = when {
-                    currentStep == ConnectionStep.COMPLETED -> false // No current step when completed
-                    else -> step == currentStep
+                    step == currentStep -> true
+                    else -> false
                 }
 
                 StepItem(
@@ -196,10 +192,9 @@ private fun StepItem(
         // Step text
         Text(
             text = when (step) {
-                ConnectionStep.QR_SCANNED -> "QR Code Scanned"
-                ConnectionStep.ESTABLISHING_CONNECTION -> "Establishing Connection"
+                ConnectionStep.QR_CODE_SCANNED -> "QR Code Scanned"
+                ConnectionStep.ESTABLISHING_UDP_CONNECTION -> "Establishing Connection"
                 ConnectionStep.VERIFYING_LATENCY -> "Verifying Latency"
-                ConnectionStep.COMPLETED -> "Completed"
             },
             style = MaterialTheme.typography.bodyMedium,
             color = when {
@@ -216,15 +211,14 @@ private fun StepItem(
 @Preview(showBackground = true)
 @Composable
 private fun ConnectionStepProgressCardPreview() {
-    var progress: ConnectionStep by remember { mutableStateOf(ConnectionStep.QR_SCANNED) }
+    var progress: ConnectionStep by remember { mutableStateOf(ConnectionStep.QR_CODE_SCANNED) }
     LaunchedEffect(Unit) {
-        while (progress != ConnectionStep.COMPLETED) {
+        while (progress != ConnectionStep.VERIFYING_LATENCY) {
             delay(2000)
             progress = when (progress) {
-                ConnectionStep.QR_SCANNED -> ConnectionStep.ESTABLISHING_CONNECTION
-                ConnectionStep.ESTABLISHING_CONNECTION -> ConnectionStep.VERIFYING_LATENCY
-                ConnectionStep.VERIFYING_LATENCY -> ConnectionStep.COMPLETED
-                ConnectionStep.COMPLETED -> ConnectionStep.QR_SCANNED
+                ConnectionStep.QR_CODE_SCANNED -> ConnectionStep.ESTABLISHING_UDP_CONNECTION
+                ConnectionStep.ESTABLISHING_UDP_CONNECTION -> ConnectionStep.VERIFYING_LATENCY
+                ConnectionStep.VERIFYING_LATENCY -> ConnectionStep.QR_CODE_SCANNED
             }
         }
     }

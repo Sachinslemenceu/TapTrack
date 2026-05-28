@@ -8,5 +8,4 @@ interface MouseRepository {
     suspend fun disconnect()
     suspend fun sendMouseMove(dx: Int, dy: Int)
     suspend fun sendClick(rightClick: Boolean)
-    suspend fun measureUdpLatency(): Long
 }

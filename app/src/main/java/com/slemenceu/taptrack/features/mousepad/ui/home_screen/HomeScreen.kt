@@ -2,7 +2,6 @@ package com.slemenceu.taptrack.features.mousepad.ui.home_screen
 
 import android.Manifest
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -34,13 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.zxing.integration.android.IntentIntegrator
-import com.slemenceu.taptrack.core.ui.composables.MyPrimaryButton
-import com.slemenceu.taptrack.core.ui.composables.BackgroundThemeCard
-import com.slemenceu.taptrack.core.ui.composables.MySecondaryButton
 import com.slemenceu.taptrack.core.utils.PermissionManager
 import com.slemenceu.taptrack.core.utils.findActivity
+import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
 import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.ConnectionCard
-import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.FirstTimeUserHomeSection
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.ConnectionStepProgressCard
 import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.darkBlue900
 import com.slemenceu.taptrack.ui.theme.green500
@@ -56,9 +53,7 @@ fun HomeScreen(
     onEvent: (HomeUiEvent) -> Unit,
     uiEffect: SharedFlow<HomeUiEffect>,
     onNavigateToScannerScreen: () -> Unit,
-    navigateToMousepad: () -> Unit,
-    navigateToPcGuide: () -> Unit,
-    navigateToOptions: () -> Unit
+    onNavigateToMousepad: () -> Unit,
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
@@ -103,11 +98,11 @@ fun HomeScreen(
         uiEffect.collect {
             when (it) {
 
-                HomeUiEffect.NavigateToMousepad -> navigateToMousepad()
+                HomeUiEffect.NavigateToMousepad -> onNavigateToMousepad()
 
 
-                HomeUiEffect.NavigateToPcGuide -> navigateToPcGuide()
-                HomeUiEffect.NavigateToOptions -> navigateToOptions()
+                HomeUiEffect.NavigateToPcGuide -> {}
+                HomeUiEffect.NavigateToOptions -> {}
             }
         }
     }
@@ -190,15 +185,21 @@ fun HomeScreen(
 //            ) { }
 //        } else {
         ConnectionCard(
-            connectionStatus = uiState.connectionState,
-            progress = uiState.connectionprogress,
-            onScanQrClicked = {
-                onNavigateToScannerScreen()
-            }
+            connectionStatus = uiState.connectionStatus,
+            latency = uiState.latency?:0,
+            onScanQrClicked = onNavigateToScannerScreen,
+            onCancelClicked = {
+            },
+            onOpenTrackpadClicked = onNavigateToMousepad
         )
 //        }
 
-
+        if (uiState.connectionStatus is ConnectionStatus.Connecting) {
+            Spacer(Modifier.height(16.dp))
+            ConnectionStepProgressCard(
+                currentStep = uiState.connectionStatus.step
+            )
+        }
     }
 
 
@@ -217,9 +218,7 @@ private fun HomeScreenPreview() {
             ),
             onEvent = {},
             uiEffect = MutableSharedFlow(),
-            navigateToMousepad = {},
-            navigateToPcGuide = {},
-            navigateToOptions = {},
+            onNavigateToMousepad = {},
             onNavigateToScannerScreen = {},
             modifier = Modifier.padding(it)
         )

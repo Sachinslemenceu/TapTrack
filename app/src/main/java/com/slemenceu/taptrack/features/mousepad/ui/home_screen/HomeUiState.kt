@@ -1,12 +1,12 @@
 package com.slemenceu.taptrack.features.mousepad.ui.home_screen
 
 import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
-import com.slemenceu.taptrack.features.mousepad.ui.home_screen.models.ConnectionUiState
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.ConnectionStatus
 
 data class HomeUiState(
     val ssid: String = "",
     val isConnected: Boolean = false,
-    val connectionState: ConnectionUiState = ConnectionUiState.Disconnected,
+    val connectionStatus: ConnectionStatus = ConnectionStatus.Disconnected,
     val connectionprogress: Float = 0f,
     val latency: Int? = null,
     val permissions: PermissionUiState = PermissionUiState(),

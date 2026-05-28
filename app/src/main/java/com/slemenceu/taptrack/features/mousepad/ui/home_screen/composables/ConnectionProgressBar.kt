@@ -22,7 +22,7 @@ import com.slemenceu.taptrack.ui.theme.green500
 @Composable
 fun ConnectionProgressBar(
     modifier: Modifier = Modifier,
-    progress: Float = 0.5f
+//    progress: Float = 0.5f
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -30,7 +30,7 @@ fun ConnectionProgressBar(
     ) {
         // Outer progress bar (Green, 2.dp width)
         CircularProgressIndicator(
-            progress = { progress },
+//            progress = { progress },
             modifier = Modifier.size(130.dp),
             color = blue500,
             strokeWidth = 3.dp,
@@ -40,7 +40,7 @@ fun ConnectionProgressBar(
 
         // Inner progress bar (Red, 1.dp width) with padding
         CircularProgressIndicator(
-            progress = { progress },
+//            progress = { progress },
             modifier = Modifier
                 .size(110.dp)
                 .padding(10.dp),
