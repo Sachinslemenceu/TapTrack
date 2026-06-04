@@ -7,18 +7,20 @@ import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
 import com.slemenceu.taptrack.features.connection.domain.usecases.DisconnectUseCase
 import com.slemenceu.taptrack.features.connection.domain.usecases.GetConnectionStatusUseCase
 import com.slemenceu.taptrack.features.connection.domain.usecases.GetLatencyUseCase
-import com.slemenceu.taptrack.features.mousepad.domain.MouseRepository
-import com.slemenceu.taptrack.features.mousepad.ui.home_screen.HomeUiEffect
+import com.slemenceu.taptrack.features.mousepad.domain.usecase.SendClickUseCase
+import com.slemenceu.taptrack.features.mousepad.domain.usecase.SendMouseMoveUseCase
+import com.slemenceu.taptrack.features.mousepad.domain.usecase.SendScrollUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TrackpadViewModel(
-    private val repository: MouseRepository,
     private val getConnectionStatus: GetConnectionStatusUseCase,
+    private val sendMouseMove: SendMouseMoveUseCase,
+    private val sendClick: SendClickUseCase,
+    private val sendScroll: SendScrollUseCase,
     private val getLatency: GetLatencyUseCase,
     private val disconnect: DisconnectUseCase
 ): ViewModel() {
@@ -56,13 +58,17 @@ class TrackpadViewModel(
         when (event) {
             is TrackpadUiEvent.SendClick -> {
                 viewModelScope.launch {
-                    repository.sendClick(event.rightClick)
+                    sendClick(event.rightClick)
                 }
             }
             is TrackpadUiEvent.SendTrackpadMove -> {
                 viewModelScope.launch {
-                    repository.sendMouseMove(event.dx, event.dy)
-                    Log.d("MouseViewModel", "Mouse move sent: dx=${event.dx}, dy=${event.dy}")
+                    sendMouseMove(event.dx, event.dy)
+                }
+            }
+            is TrackpadUiEvent.SendScroll -> {
+                viewModelScope.launch {
+                    sendScroll(event.dy)
                 }
             }
 
@@ -79,7 +85,7 @@ class TrackpadViewModel(
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
-            repository.disconnect()
+            disconnect()
         }
     }
 

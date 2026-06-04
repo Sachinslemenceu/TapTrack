@@ -23,6 +23,9 @@ import com.slemenceu.taptrack.features.mousepad.data.services.WifiService
 import com.slemenceu.taptrack.features.mousepad.domain.HomeRepository
 import com.slemenceu.taptrack.features.mousepad.domain.MouseRepository
 import com.slemenceu.taptrack.features.mousepad.domain.QRScannerRepo
+import com.slemenceu.taptrack.features.mousepad.domain.usecase.SendClickUseCase
+import com.slemenceu.taptrack.features.mousepad.domain.usecase.SendMouseMoveUseCase
+import com.slemenceu.taptrack.features.mousepad.domain.usecase.SendScrollUseCase
 import com.slemenceu.taptrack.features.mousepad.ui.home_screen.HomeViewModel
 import com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen.TrackpadViewModel
 import com.slemenceu.taptrack.features.mousepad.ui.options_screen.OptionsViewModel
@@ -30,6 +33,7 @@ import org.koin.dsl.module
 
 
 val appModule = module {
+
     single {AuthStatus(get())}
     single { AuthService() }
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
@@ -42,7 +46,7 @@ val appModule = module {
     single { RegisterViewModel(get()) }
     single { ResetPasswordViewModel(get()) }
     single { WifiService(get()) }
-    single{ TrackpadViewModel(get(),get(),get(),get()) }
+    single{ TrackpadViewModel(get(),get(),get(),get(),get(),get()) }
     single{ OptionsViewModel(get()) }
     single { ScannerViewModel()  }
 
@@ -52,4 +56,8 @@ val appModule = module {
     single { GetConnectionStatusUseCase(get()) }
     single { GetLatencyUseCase(get()) }
     single { DisconnectUseCase(get()) }
+    single { SendClickUseCase(get()) }
+    single { SendMouseMoveUseCase(get()) }
+    single { SendScrollUseCase(get()) }
+
 }

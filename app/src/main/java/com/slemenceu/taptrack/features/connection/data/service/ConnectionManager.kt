@@ -4,7 +4,6 @@ package com.slemenceu.taptrack.features.connection.data.service
 import android.util.Log
 import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
 import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStep
-import com.slemenceu.taptrack.features.mousepad.data.repository.MouseRepositoryImpl.Command
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,20 +42,28 @@ class ConnectionManager {
     fun getTcpStream() = tcpOutputStream
     fun getUdpSocket() = udpSocket
     fun getTargetAddress() = targetAddress
+    
     private val moveBytes = ByteArray(9)
     private val movePacket = DatagramPacket(moveBytes, moveBytes.size)
-    private val clickBytes = ByteArray(2)
+    
+    private val scrollBytes = ByteArray(5)
+    private val scrollPacket = DatagramPacket(scrollBytes, scrollBytes.size)
 
     @Volatile
     private var latestDx = 0
 
     @Volatile
     private var latestDy = 0
+
+    @Volatile
+    private var latestScrollDy = 0
+    
     private var senderJob: Job? = null
 
     private object Command {
         const val MOVE: Byte = 0
         const val CLICK: Byte = 1
+        const val SCROLL: Byte = 2
     }
 
 
@@ -240,6 +247,10 @@ class ConnectionManager {
         latestDx = dx
         latestDy = dy
     }
+    
+    fun updateScrollPosition(dy: Int) {
+        latestScrollDy = dy
+    }
 
     private fun startRealtimeSender() {
 
@@ -258,7 +269,9 @@ class ConnectionManager {
                 try {
                     val dx = latestDx
                     val dy = latestDy
+                    val sDy = latestScrollDy
 
+                    // Send Move if any
                     if (dx != 0 || dy != 0) {
 
                         moveBytes[0] = Command.MOVE
@@ -278,9 +291,24 @@ class ConnectionManager {
 
                         udp.send(movePacket)
 
-                        // CRITICAL
                         latestDx = 0
                         latestDy = 0
+                    }
+                    
+                    // Send Scroll if any
+                    if (sDy != 0) {
+                        scrollBytes[0] = Command.SCROLL
+                        scrollBytes[1] = (sDy shr 24).toByte()
+                        scrollBytes[2] = (sDy shr 16).toByte()
+                        scrollBytes[3] = (sDy shr 8).toByte()
+                        scrollBytes[4] = sDy.toByte()
+
+                        scrollPacket.address = target
+                        scrollPacket.port = 9999
+
+                        udp.send(scrollPacket)
+
+                        latestScrollDy = 0
                     }
 
                 } catch (e: Exception) {

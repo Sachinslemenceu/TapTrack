@@ -3,8 +3,8 @@ package com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen.composables
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,8 +31,6 @@ import com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen.TrackpadUiEve
 import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.lightGrey300
 import com.slemenceu.taptrack.ui.theme.lightGrey400
-import com.slemenceu.taptrack.ui.theme.lightGrey800
-
 
 @Composable
 fun TouchPad(
@@ -43,68 +42,90 @@ fun TouchPad(
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black)
                     .pointerInput(Unit) {
-                        forEachGesture {
-                            awaitPointerEventScope {
-                                val down = awaitFirstDown()
-                                val startTime = System.currentTimeMillis()
-                                var lastPos = down.position
-                                var moved = false
+                        awaitEachGesture {
+                            val down = awaitFirstDown()
+                            val startTime = System.currentTimeMillis()
+                            var lastPos = down.position
+                            var lastScrollY = 0f
+                            var moved = false
+                            var isScrolling = false
 
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    val change =
-                                        event.changes.firstOrNull { it.id == down.id } ?: break
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val activeChanges = event.changes.filter { it.pressed }
 
-                                    if (!change.pressed) break
+                                if (activeChanges.isEmpty()) break
 
+                                if (activeChanges.size >= 2) {
+                                    // Two-finger scroll logic
+                                    isScrolling = true
+                                    moved = true // Prevent click on release
+                                    
+                                    // Average Y position of the first two active fingers
+                                    val currentScrollY = (activeChanges[0].position.y + activeChanges[1].position.y) / 2
+                                    
+                                    if (lastScrollY != 0f) {
+                                        val deltaY = (currentScrollY - lastScrollY).toInt()
+                                        if (deltaY != 0) {
+                                            // Send inverted delta for natural scroll if needed, 
+                                            // here we send the raw delta
+                                            onEvent(TrackpadUiEvent.SendScroll(-deltaY))
+                                        }
+                                    }
+                                    lastScrollY = currentScrollY
+                                    
+                                    // Reset lastPos so mouse move doesn't "jump" when switching back to 1 finger
+                                    lastPos = activeChanges[0].position
+                                    
+                                    event.changes.forEach { it.consume() }
+                                } else {
+                                    // Single finger move logic
+                                    lastScrollY = 0f 
+                                    val change = activeChanges[0]
                                     val currentPos = change.position
-                                    val dx = (currentPos.x - lastPos.x).toInt()
-                                    val dy = (currentPos.y - lastPos.y).toInt()
-
-                                    val distance = dx * dx + dy * dy
-                                    if (distance > 16) { // 4px movement threshold
-                                        moved = true
+                                    
+                                    // If we were just scrolling, don't move the mouse on the frame we switch back
+                                    if (isScrolling) {
                                         lastPos = currentPos
-                                        try {
+                                        isScrolling = false
+                                    } else {
+                                        val dx = (currentPos.x - lastPos.x).toInt()
+                                        val dy = (currentPos.y - lastPos.y).toInt()
+
+                                        if (dx != 0 || dy != 0) {
+                                            moved = true
                                             onEvent(TrackpadUiEvent.SendTrackpadMove(dx, dy))
-                                            Log.d("TouchPad", "Mouse move: dx=$dx, dy=$dy")
-                                        } catch (e: Exception) {
-                                            Log.e("TouchPad", "Mouse move failed: ${e.message}")
+                                            lastPos = currentPos
                                         }
                                     }
-
+                                    change.consume()
                                 }
+                            }
 
-                                val duration = System.currentTimeMillis() - startTime
-                                if (!moved) {
-                                    try {
-                                        if (duration >= 500) {
-                                            onEvent(TrackpadUiEvent.SendClick(rightClick = true))
-                                        } else {
-                                            onEvent(TrackpadUiEvent.SendClick(rightClick = false))
-                                        }
-                                    } catch (e: Exception) {
-                                        Log.e("TouchPad", "Click send failed: ${e.message}")
-                                    }
-                                }
+                            // Handle click if no movement or scrolling occurred
+                            val duration = System.currentTimeMillis() - startTime
+                            if (!moved) {
+                                val isRightClick = duration >= 500
+                                onEvent(TrackpadUiEvent.SendClick(isRightClick))
                             }
                         }
                     }
             )
+            
             Text(
                 "Touch & drag to move cursor \nTwo fingers to scroll",
                 textAlign = TextAlign.Center,
                 fontSize = 11.sp,
                 color = lightGrey300,
             )
+            
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -113,46 +134,33 @@ fun TouchPad(
                     .fillMaxWidth()
                     .padding(vertical = 30.dp)
             ) {
-                Surface(
-                    color = Color.Black.copy(alpha = 0.5f),
-                    border = BorderStroke(1.dp, darkBlue800),
-                    shape = RoundedCornerShape(15.dp),
-                ) {
-                    Text(
-                        "1-finger move",
-                        textAlign = TextAlign.Center,
-                        fontSize = 9.sp,
-                        color = lightGrey400,
-                        modifier = Modifier
-                            .padding(vertical = 5.dp, horizontal = 20.dp)
-                    )
-                }
+                InstructionChip("1-finger move")
                 Spacer(Modifier.width(12.dp))
-                Surface(
-                    color = Color.Black.copy(alpha = 0.5f),
-                    border = BorderStroke(1.dp, darkBlue800),
-                    shape = RoundedCornerShape(15.dp),
-                ) {
-                    Text(
-                        "2-finger scroll",
-                        textAlign = TextAlign.Center,
-                        fontSize = 9.sp,
-                        color = lightGrey400,
-                        modifier = Modifier
-                            .padding(vertical = 5.dp, horizontal = 20.dp)
-                    )
-                }
+                InstructionChip("2-finger scroll")
             }
         }
     }
 }
 
+@Composable
+private fun InstructionChip(text: String) {
+    Surface(
+        color = Color.Black.copy(alpha = 0.5f),
+        border = BorderStroke(1.dp, darkBlue800),
+        shape = RoundedCornerShape(15.dp),
+    ) {
+        Text(
+            text,
+            textAlign = TextAlign.Center,
+            fontSize = 9.sp,
+            color = lightGrey400,
+            modifier = Modifier.padding(vertical = 5.dp, horizontal = 20.dp)
+        )
+    }
+}
 
 @Preview
 @Composable
 private fun TouchPadPreview() {
-    TouchPad(
-        onEvent = {}
-    )
+    TouchPad(onEvent = {})
 }
-
