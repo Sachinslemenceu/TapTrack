@@ -113,7 +113,8 @@ fun TouchPad(
                             val duration = System.currentTimeMillis() - startTime
                             if (!moved) {
                                 val isRightClick = duration >= 500
-                                onEvent(TrackpadUiEvent.SendClick(isRightClick))
+//                                Currently Disabled touch based based click
+//                                onEvent(TrackpadUiEvent.SendClick(isRightClick))
                             }
                         }
                     }

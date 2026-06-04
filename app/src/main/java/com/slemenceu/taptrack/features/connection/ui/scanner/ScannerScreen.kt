@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -33,10 +36,14 @@ import com.slemenceu.taptrack.ui.theme.lightGrey400
 fun ScannerScreen(
     onBackClicked: () -> Unit,
     onNavigateToManualConnection: () -> Unit,
-    onNavigateToHomeScreen:(String) -> Unit,
+    onNavigateToHomeScreen: (String) -> Unit,
     viewModel: ScannerViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.fetchConnectedNetworkInfo(context)
+    }
     AppTopBar(
         onBackClicked = onBackClicked,
         title = buildAnnotatedString { append("Scan to Connect") }
@@ -56,7 +63,7 @@ fun ScannerScreen(
             ) {
                 CameraPreviewContent(
                     viewModel = viewModel,
-                    onQrCodeScanned = {qrCode->
+                    onQrCodeScanned = { qrCode ->
                         onNavigateToHomeScreen(qrCode)
                     },
                     modifier = Modifier
@@ -120,7 +127,7 @@ fun ScannerScreen(
                     Spacer(Modifier.weight(0.2f))
                     Column() {
                         Text(
-                            text = "Home-WiFi-5G",
+                            text = viewModel.uiState.collectAsState().value.connectedNetworkName,
                             fontSize = 12.sp,
                             color = green500,
                         )

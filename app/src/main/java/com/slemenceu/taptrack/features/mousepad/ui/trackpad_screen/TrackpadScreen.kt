@@ -123,14 +123,18 @@ fun TrackpadScreen(
                 textColor = lightGrey400,
                 modifier = Modifier
                     .weight(1f)
-            ) { }
+            ) {
+                onEvent(TrackpadUiEvent.SendClick(false))
+            }
             Spacer(Modifier.width(20.dp))
             MySecondaryButton(
                 text = "Right Click",
                 textColor = lightGrey400,
                 modifier = Modifier
                     .weight(1f)
-            ) { }
+            ) {
+                onEvent(TrackpadUiEvent.SendClick(true))
+            }
         }
         Spacer(Modifier.weight(0.1f))
     }

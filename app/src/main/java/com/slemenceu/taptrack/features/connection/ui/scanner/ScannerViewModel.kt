@@ -10,26 +10,25 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceRequest
-import androidx.camera.core.TorchState
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import com.slemenceu.taptrack.features.connection.domain.usecases.ConnectToPcUseCase
+import com.slemenceu.taptrack.features.connection.data.utils.getConnectedWifiName
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class ScannerViewModel(
 ): ViewModel() {
 
+    private val _uiState = MutableStateFlow(ScannerScreenUiState())
+    val uiState = _uiState.asStateFlow()
     private val _surfaceRequest = MutableStateFlow<SurfaceRequest?>(null)
     val surfaceRequest = _surfaceRequest.asStateFlow()
 
@@ -102,4 +101,11 @@ class ScannerViewModel(
             imageProxy.close()
         }
     }
+
+
+    fun fetchConnectedNetworkInfo(context: Context){
+        val wifiName = getConnectedWifiName(context)
+        _uiState.update { it.copy(connectedNetworkName = wifiName) }
+    }
+
 }
