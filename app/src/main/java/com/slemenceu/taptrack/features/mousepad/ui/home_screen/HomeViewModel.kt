@@ -115,10 +115,10 @@ class HomeViewModel(
             is HomeUiEvent.Connect -> {
                 viewModelScope.launch {
                     connectToPc(event.connectionInfo)
-                        .onSuccess {latency->
-                            Log.d(TAG,"The latency is $latency")
+                        .onSuccess {connectionResult->
+                            Log.d(TAG,"The latency is ${connectionResult.latency}")
                             _uiState.update {
-                                it.copy(latency = latency)
+                                it.copy(latency = connectionResult.latency, deviceName = connectionResult.deviceName, networkName = connectionResult.networkName)
                             }
                         }
                         .onFailure {

@@ -1,22 +1,19 @@
 package com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,20 +29,39 @@ import com.slemenceu.taptrack.R
 import com.slemenceu.taptrack.core.ui.composables.MyDialog
 import com.slemenceu.taptrack.core.ui.composables.MyIconButton
 import com.slemenceu.taptrack.core.ui.composables.MySecondaryButton
+import com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen.composables.ConnectionDot
 import com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen.composables.TouchPad
 import com.slemenceu.taptrack.ui.theme.darkBlue900
 import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.lightGrey300
 import com.slemenceu.taptrack.ui.theme.lightGrey400
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 
 @Composable
 fun TrackpadScreen(
+    uiState: TrackPadUiState,
+    uiEffect: SharedFlow<TrackpadUiEffect>,
     onEvent: (TrackpadUiEvent) -> Unit,
-    onNavigateToHome:() -> Unit,
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     var isDisconnectDialogOpen by remember { mutableStateOf(false) }
+    var showConnectionLostDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        uiEffect.collect { effect ->
+            when (effect) {
+                TrackpadUiEffect.NavigateToHome -> onNavigateToHome()
+                TrackpadUiEffect.ConnectionLost -> {
+                    showConnectionLostDialog = true
+                }
+            }
+        }
+    }
+
+
 
     BackHandler() {
         isDisconnectDialogOpen = true
@@ -61,20 +77,16 @@ fun TrackpadScreen(
                 .fillMaxWidth()
                 .padding(10.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .background(color = green500, shape = CircleShape)
-                    .size(5.dp)
-            )
+            ConnectionDot(uiState.connectionStatus)
             Spacer(Modifier.width(4.dp))
             Text(
-                "Macbook pro",
+                uiState.deviceName,
                 fontSize = 11.sp,
                 color = green500
             )
             Spacer(Modifier.width(20.dp))
             Text(
-                "12 ms",
+                "${uiState.latency} ms",
                 fontSize = 11.sp,
                 color = lightGrey300
             )
@@ -106,34 +118,44 @@ fun TrackpadScreen(
                 .fillMaxWidth()
                 .padding(vertical = 20.dp)
         ) {
-           MySecondaryButton(
-               text = "Left Click",
-               textColor = lightGrey400,
-               modifier = Modifier
-                   .weight(1f)
-           ) { }
+            MySecondaryButton(
+                text = "Left Click",
+                textColor = lightGrey400,
+                modifier = Modifier
+                    .weight(1f)
+            ) { }
             Spacer(Modifier.width(20.dp))
-           MySecondaryButton(
-               text = "Right Click",
-               textColor = lightGrey400,
-               modifier = Modifier
-                   .weight(1f)
-           ) { }
+            MySecondaryButton(
+                text = "Right Click",
+                textColor = lightGrey400,
+                modifier = Modifier
+                    .weight(1f)
+            ) { }
         }
         Spacer(Modifier.weight(0.1f))
     }
 
-    if (isDisconnectDialogOpen){
+    if (isDisconnectDialogOpen) {
         MyDialog(
             header = "Do you want to dsconnect?",
             description = "This will disconnect the app from the PC.",
             icon = ImageVector.vectorResource(R.drawable.cancel_phn_icon),
-            onConfirm = {},
+            onConfirm = {onEvent(TrackpadUiEvent.OnDisconnect)},
             onDismiss = {
                 isDisconnectDialogOpen = false
             },
             primaryButtonText = "Yes",
             secondaryButtonText = "No, Cancel"
+        )
+    }
+    if (showConnectionLostDialog) {
+        MyDialog(
+            header = "Disconnected",
+            description = "You have been disconnected from the PC.",
+            icon = ImageVector.vectorResource(R.drawable.cancel_phn_icon),
+            onConfirm = onNavigateToHome,
+            onDismiss = {},
+            primaryButtonText = "OK",
         )
     }
 }
@@ -147,7 +169,9 @@ private fun TrackpadScreenPreview() {
         TrackpadScreen(
             modifier = Modifier.padding(it),
             onEvent = {},
-            onNavigateToHome = {}
+            onNavigateToHome = {},
+            uiState = TrackPadUiState(),
+            uiEffect = MutableSharedFlow()
         )
     }
 }

@@ -38,7 +38,7 @@ fun MyDialog(
     icon: ImageVector,
     primaryButtonText: String,
     primaryButtonColor: Color = red500,
-    secondaryButtonText: String,
+    secondaryButtonText: String? = null,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier) {
@@ -96,11 +96,13 @@ fun MyDialog(
                     containerColor = primaryButtonColor.copy(0.1f),
                     onClick = onConfirm
                 )
-                Spacer(Modifier.height(12.dp))
-                MyPrimaryButton(
-                    text = secondaryButtonText,
-                    onClick = onDismiss
-                )
+                secondaryButtonText?.let {
+                    Spacer(Modifier.height(12.dp))
+                    MyPrimaryButton(
+                        text = secondaryButtonText,
+                        onClick = onDismiss
+                    )
+                }
             }
         }
     }
@@ -120,7 +122,9 @@ private fun MyDialogPreview() {
             onConfirm = {},
             onDismiss = {},
             primaryButtonText = "Yes, Cancel",
-            secondaryButtonText = "No"
+            secondaryButtonText = "No",
+            modifier = Modifier
+                .padding(it)
         )
     }
 }

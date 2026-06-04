@@ -37,6 +37,7 @@ import com.slemenceu.taptrack.core.utils.PermissionManager
 import com.slemenceu.taptrack.core.utils.findActivity
 import com.slemenceu.taptrack.features.connection.domain.models.ConnectionStatus
 import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.ConnectionCard
+import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.ConnectionDetailCard
 import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.ConnectionStepProgressCard
 import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.darkBlue900
@@ -198,6 +199,12 @@ fun HomeScreen(
             Spacer(Modifier.height(16.dp))
             ConnectionStepProgressCard(
                 currentStep = uiState.connectionStatus.step
+            )
+        }else if(uiState.connectionStatus is ConnectionStatus.Connected){
+            Spacer(Modifier.height(12.dp))
+            ConnectionDetailCard(
+                deviceName = uiState.deviceName,
+                networkName = uiState.networkName
             )
         }
     }

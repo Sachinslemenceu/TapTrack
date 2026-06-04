@@ -270,6 +270,8 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                 composable<Mouse> {
                     TrackpadScreen(
                         onEvent = trackpadViewModel::onEvent,
+                        uiState = trackpadViewModel.uiState.collectAsState().value,
+                        uiEffect = trackpadViewModel.uiEffect,
                         onNavigateToHome = { navController.navigate(Home()) }
                     )
                 }

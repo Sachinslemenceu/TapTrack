@@ -11,7 +11,9 @@ data class HomeUiState(
     val latency: Int? = null,
     val permissions: PermissionUiState = PermissionUiState(),
     val mousepad: MousepadUiState = MousepadUiState(),
-    val isFirstTime: Boolean = true
+    val isFirstTime: Boolean = true,
+    val deviceName: String = "",
+    val networkName: String = ""
 )
 data class PermissionUiState(
     val allPermissionGranted: Boolean = false,
