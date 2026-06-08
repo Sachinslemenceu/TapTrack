@@ -95,6 +95,7 @@ class HomeViewModel(
             }
 
             is HomeUiEvent.Connect -> {
+                Log.d(TAG,"The connection info is : ${event.connectionInfo}")
                 viewModelScope.launch {
                     connectToPc(event.connectionInfo)
                         .onSuccess {connectionResult->
@@ -107,6 +108,7 @@ class HomeViewModel(
                             Log.d(TAG, "The error is $it")
 //                            _uiState.update { it.copy(connectionStatus = ConnectionStatus.Disconnected) }
                         }
+                    Log.d(TAG,"The connection status is after connect: ${uiState.value.connectionStatus}")
                 }
             }
         }

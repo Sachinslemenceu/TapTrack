@@ -42,10 +42,10 @@ class ConnectionManager {
     fun getTcpStream() = tcpOutputStream
     fun getUdpSocket() = udpSocket
     fun getTargetAddress() = targetAddress
-    
+
     private val moveBytes = ByteArray(9)
     private val movePacket = DatagramPacket(moveBytes, moveBytes.size)
-    
+
     private val scrollBytes = ByteArray(5)
     private val scrollPacket = DatagramPacket(scrollBytes, scrollBytes.size)
 
@@ -57,7 +57,7 @@ class ConnectionManager {
 
     @Volatile
     private var latestScrollDy = 0
-    
+
     private var senderJob: Job? = null
 
     private object Command {
@@ -70,8 +70,13 @@ class ConnectionManager {
     suspend fun connect(host: String, port: Int): Result<Int> {
         return withContext(Dispatchers.IO) {
             try {
-                _connectionStatus.value = ConnectionStatus.Connecting()
+                // Prevent concurrent connection attempts
+                if (_connectionStatus.value is ConnectionStatus.Connecting) {
+                    return@withContext Result.failure(Exception("Connection already in progress"))
+                }
+
                 cleanup() // Ensure fresh start
+                _connectionStatus.value = ConnectionStatus.Connecting()
 
                 targetAddress = InetAddress.getByName(host)
 
@@ -93,21 +98,21 @@ class ConnectionManager {
 
                 // 4. Start Monitoring Loop
                 connectionScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-//                startTcpMonitor()
                 val latency = measureUDPLatency()
-                delay(1000)
+                
                 _connectionStatus.value =
                     ConnectionStatus.Connecting(step = ConnectionStep.ESTABLISHING_UDP_CONNECTION)
-                delay(1000)
+                delay(500)
                 _connectionStatus.value =
                     ConnectionStatus.Connecting(step = ConnectionStep.VERIFYING_LATENCY)
-                delay(1000)
-                _connectionStatus.value = ConnectionStatus.Connected
+                delay(500)
+                
                 if (latency == -1L) {
                     return@withContext Result.failure(
                         Exception("UDP Latency Measurement Failed")
                     )
                 }
+                
                 _connectionStatus.value = ConnectionStatus.Connected
                 startHeartbeatMonitor()
                 startLatencyMonitor()
@@ -189,7 +194,9 @@ class ConnectionManager {
         connectionScope?.launch {
             while (isConnected) {
                 val currentLatency = measureUDPLatency()
-                _latency.value = currentLatency.toInt()
+                if (currentLatency != -1L) {
+                    _latency.value = currentLatency.toInt()
+                }
                 delay(15000)
             }
         }
@@ -209,6 +216,8 @@ class ConnectionManager {
     private fun cleanup() {
         connectionScope?.cancel()
         connectionScope = null
+        senderJob?.cancel()
+        senderJob = null
         runCatching { tcpSocket?.close() }
         runCatching { udpSocket?.close() }
         tcpSocket = null
@@ -247,7 +256,7 @@ class ConnectionManager {
         latestDx = dx
         latestDy = dy
     }
-    
+
     fun updateScrollPosition(dy: Int) {
         latestScrollDy = dy
     }
@@ -294,7 +303,7 @@ class ConnectionManager {
                         latestDx = 0
                         latestDy = 0
                     }
-                    
+
                     // Send Scroll if any
                     if (sDy != 0) {
                         scrollBytes[0] = Command.SCROLL

@@ -13,6 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +45,8 @@ fun ScannerScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    var hasScanned by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.fetchConnectedNetworkInfo(context)
     }
@@ -64,7 +70,10 @@ fun ScannerScreen(
                 CameraPreviewContent(
                     viewModel = viewModel,
                     onQrCodeScanned = { qrCode ->
-                        onNavigateToHomeScreen(qrCode)
+                        if (!hasScanned) {
+                            hasScanned = true
+                            onNavigateToHomeScreen(qrCode)
+                        }
                     },
                     modifier = Modifier
                 )
