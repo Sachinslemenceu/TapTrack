@@ -74,7 +74,7 @@ fun ManualConnectionScreen(
             MyTextField(
                 value = portNo,
                 onValueChange = {
-                    ipAddress = portNo
+                    portNo = it
                 },
                 leadingIcon = ImageVector.vectorResource(R.drawable.port_no_icon),
                 placeholder = "xxxxx",
@@ -107,7 +107,7 @@ fun ManualConnectionScreen(
             MyPrimaryButton(
                 text = "Connect",
                 onClick = {
-                    val connectionInfo = "$ipAddress:$portNo:1234"
+                    val connectionInfo = "$ipAddress:$portNo:1234:MyDevice:Wifi-Network"
                     onNavigateToHomeScreen(connectionInfo)
                 },
                 modifier = Modifier
