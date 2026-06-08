@@ -57,6 +57,7 @@ fun TrackpadScreen(
                 TrackpadUiEffect.NavigateToHome -> {
                     onNavigateToHome(true)
                 }
+
                 TrackpadUiEffect.ConnectionLost -> {
                     Log.d("TrackpadScreen", "Connection lost event is recived")
                     showConnectionLostDialog = true
@@ -150,7 +151,10 @@ fun TrackpadScreen(
             header = "Do you want to dsconnect?",
             description = "This will disconnect the app from the PC.",
             icon = ImageVector.vectorResource(R.drawable.cancel_phn_icon),
-            onConfirm = {onEvent(TrackpadUiEvent.OnDisconnect)},
+            onConfirm = {
+                isDisconnectDialogOpen = false
+                onEvent(TrackpadUiEvent.OnDisconnect)
+            },
             onDismiss = {
                 isDisconnectDialogOpen = false
             },
@@ -164,6 +168,7 @@ fun TrackpadScreen(
             description = "You have been disconnected from the PC.",
             icon = ImageVector.vectorResource(R.drawable.cancel_phn_icon),
             onConfirm = {
+                showConnectionLostDialog = false
                 onNavigateToHome(false)
             },
             onDismiss = {},

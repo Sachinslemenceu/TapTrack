@@ -203,7 +203,6 @@ fun AppNavGraph(modifier: Modifier = Modifier) {
                     HomeScreen(
                         uiState = viewModel.uiState.collectAsState().value,
                         onEvent = viewModel::onEvent,
-                        uiEffect = viewModel.uiEffect,
                         onNavigateToMousepad = { navController.navigate(Mouse) },
                         onNavigateToScannerScreen = { navController.navigate(ConnectionGraph) },
                         onNavigateToSettings = { navController.navigate(SettingsGraph) }

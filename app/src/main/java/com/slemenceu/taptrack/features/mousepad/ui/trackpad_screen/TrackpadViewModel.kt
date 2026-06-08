@@ -23,7 +23,7 @@ class TrackpadViewModel(
     private val sendScroll: SendScrollUseCase,
     private val getLatency: GetLatencyUseCase,
     private val disconnect: DisconnectUseCase
-): ViewModel() {
+) : ViewModel() {
     private val TAG = "TrackpadViewModel"
     private val _uiEffect = MutableSharedFlow<TrackpadUiEffect>()
     val uiEffect = _uiEffect.asSharedFlow()
@@ -36,7 +36,7 @@ class TrackpadViewModel(
 
     init {
         viewModelScope.launch {
-            getConnectionStatus().collect{
+            getConnectionStatus().collect {
                 Log.d("TrackpadViewModel", "Connection status: $it")
                 _uiState.value = _uiState.value.copy(connectionStatus = it)
                 if (it == ConnectionStatus.Disconnected || it is ConnectionStatus.Failed) {
@@ -48,7 +48,7 @@ class TrackpadViewModel(
             }
         }
         viewModelScope.launch {
-            getLatency().collect {latency->
+            getLatency().collect { latency ->
                 latency?.let {
                     _uiState.value = _uiState.value.copy(latency = it)
                 }
@@ -56,6 +56,7 @@ class TrackpadViewModel(
             }
         }
     }
+
     fun onEvent(event: TrackpadUiEvent) {
         when (event) {
             is TrackpadUiEvent.SendClick -> {
@@ -63,11 +64,13 @@ class TrackpadViewModel(
                     sendClick(event.rightClick)
                 }
             }
+
             is TrackpadUiEvent.SendTrackpadMove -> {
                 viewModelScope.launch {
                     sendMouseMove(event.dx, event.dy)
                 }
             }
+
             is TrackpadUiEvent.SendScroll -> {
                 viewModelScope.launch {
                     sendScroll(event.dy)
@@ -76,9 +79,14 @@ class TrackpadViewModel(
 
             TrackpadUiEvent.OnDisconnect -> {
                 viewModelScope.launch {
-                    disconnect().onSuccess {
-                        sendEffect(TrackpadUiEffect.NavigateToHome)
-                    }
+                    disconnect()
+                        .onSuccess {
+                            Log.d(TAG, "Disconnected successfully")
+//                            sendEffect(TrackpadUiEffect.NavigateToHome)
+                        }
+                        .onFailure {
+                            Log.e(TAG, "Error disconnecting", it)
+                        }
                 }
             }
         }

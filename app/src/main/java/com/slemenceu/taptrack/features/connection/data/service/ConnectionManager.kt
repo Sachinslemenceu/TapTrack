@@ -68,20 +68,25 @@ class ConnectionManager {
 
 
     suspend fun connect(host: String, port: Int): Result<Int> {
+        Log.d(TAG, "Connecting to $host:$port")
         return withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "Connecting to $host:$port")
                 // Prevent concurrent connection attempts
                 if (_connectionStatus.value is ConnectionStatus.Connecting) {
+                    Log.w(TAG, "Connection already in progress. Ignoring attempt to connect to $host")
                     return@withContext Result.failure(Exception("Connection already in progress"))
                 }
 
+                Log.d(TAG, "Cleaning up previous resources before connecting...")
                 cleanup() // Ensure fresh start
                 _connectionStatus.value = ConnectionStatus.Connecting()
 
+                Log.d(TAG, "Resolving host: $host")
                 targetAddress = InetAddress.getByName(host)
+                Log.d(TAG, "Host resolved to: ${targetAddress?.hostAddress}")
 
-                // 1. Establish TCP Control Channel (Port 9998)
+                // 1. Establish TCP Control Channel
+                Log.d(TAG, "Establishing TCP Control Channel on port $port...")
                 tcpSocket = Socket().apply {
                     // Critical for low latency: Disable Nagle's algorithm
                     tcpNoDelay = true
@@ -89,9 +94,12 @@ class ConnectionManager {
                     connect(InetSocketAddress(targetAddress, port), 5000)
                 }
                 tcpOutputStream = tcpSocket?.getOutputStream()
+                Log.d(TAG, "TCP Connection established successfully.")
 
-                // 2. Establish UDP High-Frequency Channel (Port 9999)
+                // 2. Establish UDP High-Frequency Channel
+                Log.d(TAG, "Initializing UDP Socket...")
                 udpSocket = DatagramSocket()
+                Log.d(TAG, "UDP Socket initialized on local port ${udpSocket?.localPort}")
 
                 // 3. Optional: Perform Handshake via TCP (More reliable than UDP handshake)
                 // For now, we assume connection success if the TCP socket opens
@@ -99,29 +107,38 @@ class ConnectionManager {
 
                 // 4. Start Monitoring Loop
                 connectionScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+                
+                Log.d(TAG, "Measuring initial UDP latency...")
                 val latency = measureUDPLatency()
+                Log.d(TAG, "Initial UDP Latency: $latency ms")
                 
                 _connectionStatus.value =
                     ConnectionStatus.Connecting(step = ConnectionStep.ESTABLISHING_UDP_CONNECTION)
                 delay(500)
+                
                 _connectionStatus.value =
                     ConnectionStatus.Connecting(step = ConnectionStep.VERIFYING_LATENCY)
                 delay(500)
                 
                 if (latency == -1L) {
-                    val error = "UDP Latency Measurement Failed"
+                    val error = "UDP Latency Measurement Failed (Timeout or Unreachable)"
+                    Log.e(TAG, error)
                     setConnectionFailed(error)
                     return@withContext Result.failure(Exception(error))
                 }
                 
+                Log.d(TAG, "Connection handshake complete. Starting monitors...")
                 _connectionStatus.value = ConnectionStatus.Connected
+                
                 startHeartbeatMonitor()
                 startLatencyMonitor()
                 startRealtimeSender()
+                
+                Log.i(TAG, "Successfully connected to $host. System is ready.")
                 return@withContext Result.success(latency.toInt())
             } catch (e: Exception) {
                 val error = e.localizedMessage ?: "Connection failed"
-                Log.e(TAG, "Connection failed: $error")
+                Log.e(TAG, "Connection process failed: $error", e)
                 setConnectionFailed(error)
                 return@withContext Result.failure(e)
             }
@@ -210,8 +227,10 @@ class ConnectionManager {
     }
 
     suspend fun disconnect() {
+        Log.d(TAG, "Disconnecting...")
         cleanup()
         _connectionStatus.value = ConnectionStatus.Disconnected
+        Log.d(TAG, "Disconnected.")
     }
 
     private fun cleanup() {

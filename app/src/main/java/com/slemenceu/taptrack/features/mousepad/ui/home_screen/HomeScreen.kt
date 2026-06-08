@@ -5,10 +5,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -29,15 +25,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.zxing.integration.android.IntentIntegrator
 import com.slemenceu.taptrack.core.ui.composables.BackgroundThemeCard
 import com.slemenceu.taptrack.core.ui.composables.MyPrimaryButton
 import com.slemenceu.taptrack.core.ui.composables.MySecondaryButton
@@ -50,12 +43,9 @@ import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.Conne
 import com.slemenceu.taptrack.features.mousepad.ui.home_screen.composables.FirstTimeUserHomeSection
 import com.slemenceu.taptrack.ui.theme.darkBlue800
 import com.slemenceu.taptrack.ui.theme.darkBlue900
-import com.slemenceu.taptrack.ui.theme.green500
 import com.slemenceu.taptrack.ui.theme.lightGrey300
 import com.slemenceu.taptrack.ui.theme.lightGrey400
 import com.slemenceu.taptrack.ui.theme.lightGrey800
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 
 //@OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,14 +53,12 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: HomeUiState,
     onEvent: (HomeUiEvent) -> Unit,
-    uiEffect: SharedFlow<HomeUiEffect>,
     onNavigateToScannerScreen: () -> Unit,
     onNavigateToMousepad: () -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
     3
     val context = LocalContext.current
-    val activity = remember(context) { context.findActivity() }
     val permissions = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -82,7 +70,7 @@ fun HomeScreen(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { result ->
             Log.d(log, result.toString())
-            onEvent(HomeUiEvent.onPermissionResult(result))
+            onEvent(HomeUiEvent.OnPermissionResult(result))
             if (result.all { it.value }) {
             }
         }
@@ -94,16 +82,7 @@ fun HomeScreen(
                 permissions
             )
         }
-        uiEffect.collect {
-            when (it) {
 
-                HomeUiEffect.NavigateToMousepad -> onNavigateToMousepad()
-
-
-                HomeUiEffect.NavigateToPcGuide -> {}
-                HomeUiEffect.NavigateToOptions -> {}
-            }
-        }
     }
 
     Column(
@@ -218,7 +197,6 @@ private fun HomeScreenPreview() {
                 isFirstTime = true
             ),
             onEvent = {},
-            uiEffect = MutableSharedFlow(),
             onNavigateToMousepad = {},
             onNavigateToScannerScreen = {},
             onNavigateToSettings = {},
