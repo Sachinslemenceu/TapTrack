@@ -24,6 +24,7 @@ class ConnectionRepositoryImpl(
 
 
     override suspend fun connect(ip: String, port: Int): Result<Int> {
+        Log.d(TAG, "Connecting to $ip:$port")
         return connectionManager.connect(ip, port)
 
     }

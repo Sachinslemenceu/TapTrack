@@ -1,6 +1,7 @@
 package com.slemenceu.taptrack.features.mousepad.ui.home_screen
 
 import android.Manifest
+import android.util.DisplayMetrics
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.slemenceu.taptrack.features.authentication.data.AuthStatus
 import com.slemenceu.taptrack.features.authentication.domain.AuthRepository
 import com.slemenceu.taptrack.features.connection.domain.usecases.ConnectToPcUseCase
 import com.slemenceu.taptrack.features.connection.domain.usecases.GetConnectionStatusUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -97,6 +99,7 @@ class HomeViewModel(
             is HomeUiEvent.Connect -> {
                 Log.d(TAG,"The connection info is : ${event.connectionInfo}")
                 viewModelScope.launch {
+                    Log.d(TAG,"The connection status is before connect: ${uiState.value.connectionStatus}")
                     connectToPc(event.connectionInfo)
                         .onSuccess {connectionResult->
                             Log.d(TAG,"The latency is ${connectionResult.latency}")

@@ -70,6 +70,7 @@ class ConnectionManager {
     suspend fun connect(host: String, port: Int): Result<Int> {
         return withContext(Dispatchers.IO) {
             try {
+                Log.d(TAG, "Connecting to $host:$port")
                 // Prevent concurrent connection attempts
                 if (_connectionStatus.value is ConnectionStatus.Connecting) {
                     return@withContext Result.failure(Exception("Connection already in progress"))
@@ -108,9 +109,9 @@ class ConnectionManager {
                 delay(500)
                 
                 if (latency == -1L) {
-                    return@withContext Result.failure(
-                        Exception("UDP Latency Measurement Failed")
-                    )
+                    val error = "UDP Latency Measurement Failed"
+                    setConnectionFailed(error)
+                    return@withContext Result.failure(Exception(error))
                 }
                 
                 _connectionStatus.value = ConnectionStatus.Connected
@@ -208,9 +209,9 @@ class ConnectionManager {
         cleanup()
     }
 
-    fun disconnect() {
-        _connectionStatus.value = ConnectionStatus.Disconnected
+    suspend fun disconnect() {
         cleanup()
+        _connectionStatus.value = ConnectionStatus.Disconnected
     }
 
     private fun cleanup() {
@@ -224,6 +225,12 @@ class ConnectionManager {
         udpSocket = null
         tcpOutputStream = null
         targetAddress = null
+        
+        // Reset state
+        _latency.value = null
+        latestDx = 0
+        latestDy = 0
+        latestScrollDy = 0
     }
 
     private fun measureUDPLatency(): Long {
