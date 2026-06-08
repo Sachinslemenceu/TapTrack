@@ -1,5 +1,6 @@
 package com.slemenceu.taptrack.features.mousepad.ui.trackpad_screen
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,7 +44,7 @@ fun TrackpadScreen(
     uiState: TrackPadUiState,
     uiEffect: SharedFlow<TrackpadUiEffect>,
     onEvent: (TrackpadUiEvent) -> Unit,
-    onNavigateToHome: () -> Unit,
+    onNavigateToHome: (isDisconnected: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -53,8 +54,11 @@ fun TrackpadScreen(
     LaunchedEffect(Unit) {
         uiEffect.collect { effect ->
             when (effect) {
-                TrackpadUiEffect.NavigateToHome -> onNavigateToHome()
+                TrackpadUiEffect.NavigateToHome -> {
+                    onNavigateToHome(true)
+                }
                 TrackpadUiEffect.ConnectionLost -> {
+                    Log.d("TrackpadScreen", "Connection lost event is recived")
                     showConnectionLostDialog = true
                 }
             }
@@ -94,7 +98,9 @@ fun TrackpadScreen(
             MyIconButton(
                 icon = ImageVector.vectorResource(R.drawable.scope_icon),
                 iconColor = lightGrey400,
-                onClick = onNavigateToHome
+                onClick = {
+                    onNavigateToHome(false)
+                }
             )
             Spacer(Modifier.width(10.dp))
             MyIconButton(
@@ -157,7 +163,9 @@ fun TrackpadScreen(
             header = "Disconnected",
             description = "You have been disconnected from the PC.",
             icon = ImageVector.vectorResource(R.drawable.cancel_phn_icon),
-            onConfirm = onNavigateToHome,
+            onConfirm = {
+                onNavigateToHome(false)
+            },
             onDismiss = {},
             primaryButtonText = "OK",
         )

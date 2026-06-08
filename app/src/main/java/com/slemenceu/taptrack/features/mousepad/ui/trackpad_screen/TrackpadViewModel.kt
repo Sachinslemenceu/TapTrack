@@ -24,7 +24,7 @@ class TrackpadViewModel(
     private val getLatency: GetLatencyUseCase,
     private val disconnect: DisconnectUseCase
 ): ViewModel() {
-
+    private val TAG = "TrackpadViewModel"
     private val _uiEffect = MutableSharedFlow<TrackpadUiEffect>()
     val uiEffect = _uiEffect.asSharedFlow()
 
@@ -39,9 +39,11 @@ class TrackpadViewModel(
             getConnectionStatus().collect{
                 Log.d("TrackpadViewModel", "Connection status: $it")
                 _uiState.value = _uiState.value.copy(connectionStatus = it)
-                if (it == ConnectionStatus.Disconnected) {
-                    if (ignoredFirstDisconnect) sendEffect(TrackpadUiEffect.ConnectionLost)
-                    ignoredFirstDisconnect = true
+                if (it == ConnectionStatus.Disconnected || it is ConnectionStatus.Failed) {
+                    Log.d(TAG, "Connection lost")
+//                    if (ignoredFirstDisconnect) sendEffect(TrackpadUiEffect.ConnectionLost)
+//                    ignoredFirstDisconnect = true
+                    sendEffect(TrackpadUiEffect.ConnectionLost)
                 }
             }
         }

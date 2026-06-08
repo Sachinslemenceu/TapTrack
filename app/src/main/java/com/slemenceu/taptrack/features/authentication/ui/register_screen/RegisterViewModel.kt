@@ -47,6 +47,7 @@ class RegisterViewModel(
                     Log.d("RegisterViewModel", "Registration result: $result")
                     if (result) {
                         authRepo.saveAuthStatus(isLoggedIn = true)
+                        authRepo.saveFirstLoginStatus(true)
                         emitEffect(RegisterUiEffect.NavigateToHome)
                     } else {
                         emitEffect(RegisterUiEffect.PasswordUnmatched)

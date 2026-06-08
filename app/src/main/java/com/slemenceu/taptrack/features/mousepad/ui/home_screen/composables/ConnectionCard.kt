@@ -62,7 +62,7 @@ fun ConnectionCard(
                 .padding(14.dp)
         ) {
             ConnectionStatus(connectionStatus = connectionStatus)
-            if (connectionStatus == ConnectionStatus.Disconnected) {
+            if (connectionStatus == ConnectionStatus.Disconnected || connectionStatus is ConnectionStatus.Failed) {
                 Spacer(Modifier.height(8.dp))
 
                 Icon(
