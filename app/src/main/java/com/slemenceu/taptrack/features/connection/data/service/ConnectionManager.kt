@@ -14,6 +14,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.ByteBuffer
+import java.util.concurrent.atomic.AtomicInteger
 
 
 class ConnectionManager {
@@ -49,14 +50,11 @@ class ConnectionManager {
     private val scrollBytes = ByteArray(5)
     private val scrollPacket = DatagramPacket(scrollBytes, scrollBytes.size)
 
-    @Volatile
-    private var latestDx = 0
-
-    @Volatile
-    private var latestDy = 0
-
-    @Volatile
-    private var latestScrollDy = 0
+    // Using AtomicInteger to accumulate deltas. This prevents "skipping" movements
+    // if multiple updates happen before the sender loop ticks (which can cause stuttering).
+    private val latestDx = AtomicInteger(0)
+    private val latestDy = AtomicInteger(0)
+    private val latestScrollDy = AtomicInteger(0)
 
     private var senderJob: Job? = null
 
@@ -68,25 +66,19 @@ class ConnectionManager {
 
 
     suspend fun connect(host: String, port: Int): Result<Int> {
-        Log.d(TAG, "Connecting to $host:$port")
         return withContext(Dispatchers.IO) {
             try {
                 // Prevent concurrent connection attempts
                 if (_connectionStatus.value is ConnectionStatus.Connecting) {
-                    Log.w(TAG, "Connection already in progress. Ignoring attempt to connect to $host")
                     return@withContext Result.failure(Exception("Connection already in progress"))
                 }
 
-                Log.d(TAG, "Cleaning up previous resources before connecting...")
                 cleanup() // Ensure fresh start
                 _connectionStatus.value = ConnectionStatus.Connecting()
 
-                Log.d(TAG, "Resolving host: $host")
                 targetAddress = InetAddress.getByName(host)
-                Log.d(TAG, "Host resolved to: ${targetAddress?.hostAddress}")
 
                 // 1. Establish TCP Control Channel
-                Log.d(TAG, "Establishing TCP Control Channel on port $port...")
                 tcpSocket = Socket().apply {
                     // Critical for low latency: Disable Nagle's algorithm
                     tcpNoDelay = true
@@ -94,12 +86,9 @@ class ConnectionManager {
                     connect(InetSocketAddress(targetAddress, port), 5000)
                 }
                 tcpOutputStream = tcpSocket?.getOutputStream()
-                Log.d(TAG, "TCP Connection established successfully.")
 
                 // 2. Establish UDP High-Frequency Channel
-                Log.d(TAG, "Initializing UDP Socket...")
                 udpSocket = DatagramSocket()
-                Log.d(TAG, "UDP Socket initialized on local port ${udpSocket?.localPort}")
 
                 // 3. Optional: Perform Handshake via TCP (More reliable than UDP handshake)
                 // For now, we assume connection success if the TCP socket opens
@@ -108,9 +97,7 @@ class ConnectionManager {
                 // 4. Start Monitoring Loop
                 connectionScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
                 
-                Log.d(TAG, "Measuring initial UDP latency...")
                 val latency = measureUDPLatency()
-                Log.d(TAG, "Initial UDP Latency: $latency ms")
                 
                 _connectionStatus.value =
                     ConnectionStatus.Connecting(step = ConnectionStep.ESTABLISHING_UDP_CONNECTION)
@@ -127,14 +114,15 @@ class ConnectionManager {
                     return@withContext Result.failure(Exception(error))
                 }
                 
-                Log.d(TAG, "Connection handshake complete. Starting monitors...")
                 _connectionStatus.value = ConnectionStatus.Connected
                 
                 startHeartbeatMonitor()
                 startLatencyMonitor()
                 startRealtimeSender()
+
+                // Start 15-second simulation for testing latency/stuttering
+//                simulateRandomMovements()
                 
-                Log.i(TAG, "Successfully connected to $host. System is ready.")
                 return@withContext Result.success(latency.toInt())
             } catch (e: Exception) {
                 val error = e.localizedMessage ?: "Connection failed"
@@ -182,7 +170,6 @@ class ConnectionManager {
                     if (response == expectedPong) {
 
                         retry = 0
-                        Log.d(TAG, "ping-pong: success")
 
                     } else {
 
@@ -226,11 +213,39 @@ class ConnectionManager {
         cleanup()
     }
 
+//    /**
+//     * Simulates mouse movements for 15 seconds to test latency and stuttering.
+//     * Performs an aggressive diagonal sweep to make network hiccups clearly visible.
+//     */
+//    private fun simulateRandomMovements() {
+//        connectionScope?.launch {
+//            val durationMs = 15000L
+//            val startTime = System.currentTimeMillis()
+//
+//            var dir = 1
+//            var ticks = 0
+//            val speed = 50 // 50 pixels per 10ms = 5000 pixels/sec. High speed makes stuttering obvious.
+//
+//            while (System.currentTimeMillis() - startTime < durationMs && isConnected) {
+//                // Diagonal sweep
+//                updateMousePosition(speed * dir, speed * dir)
+//
+//                ticks++
+//                // Switch direction every 500ms (50 ticks at 10ms each)
+//                if (ticks >= 50) {
+//                    dir *= -1
+//                    ticks = 0
+//                }
+//
+//                // Simulate a high-frequency touch input (~100Hz)
+//                delay(10)
+//            }
+//        }
+//    }
+
     suspend fun disconnect() {
-        Log.d(TAG, "Disconnecting...")
         cleanup()
         _connectionStatus.value = ConnectionStatus.Disconnected
-        Log.d(TAG, "Disconnected.")
     }
 
     private fun cleanup() {
@@ -247,9 +262,9 @@ class ConnectionManager {
         
         // Reset state
         _latency.value = null
-        latestDx = 0
-        latestDy = 0
-        latestScrollDy = 0
+        latestDx.set(0)
+        latestDy.set(0)
+        latestScrollDy.set(0)
     }
 
     private fun measureUDPLatency(): Long {
@@ -279,12 +294,13 @@ class ConnectionManager {
     }
 
     fun updateMousePosition(dx: Int, dy: Int) {
-        latestDx = dx
-        latestDy = dy
+        // Accumulate deltas to ensure no movement data is lost between sender ticks
+        latestDx.addAndGet(dx)
+        latestDy.addAndGet(dy)
     }
 
     fun updateScrollPosition(dy: Int) {
-        latestScrollDy = dy
+        latestScrollDy.addAndGet(dy)
     }
 
     private fun startRealtimeSender() {
@@ -302,9 +318,10 @@ class ConnectionManager {
             while (isActive) {
 
                 try {
-                    val dx = latestDx
-                    val dy = latestDy
-                    val sDy = latestScrollDy
+                    // Atomically read and reset the accumulated deltas
+                    val dx = latestDx.getAndSet(0)
+                    val dy = latestDy.getAndSet(0)
+                    val sDy = latestScrollDy.getAndSet(0)
 
                     // Send Move if any
                     if (dx != 0 || dy != 0) {
@@ -325,9 +342,6 @@ class ConnectionManager {
                         movePacket.port = 9999
 
                         udp.send(movePacket)
-
-                        latestDx = 0
-                        latestDy = 0
                     }
 
                     // Send Scroll if any
@@ -342,8 +356,6 @@ class ConnectionManager {
                         scrollPacket.port = 9999
 
                         udp.send(scrollPacket)
-
-                        latestScrollDy = 0
                     }
 
                 } catch (e: Exception) {
@@ -351,7 +363,7 @@ class ConnectionManager {
                     Log.e(TAG, "UDP Send Failed", e)
                 }
 
-                delay(8) // ~120Hz
+                delay(16) // ~120Hz
             }
         }
     }

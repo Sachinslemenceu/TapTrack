@@ -56,8 +56,12 @@ fun TouchPad(
                             var lastScrollY = 0f
                             var moved = false
                             var isScrolling = false
+                            var remainderX = 0f
+                            var remainderY = 0f
 
                             while (true) {
+
+
                                 val event = awaitPointerEvent()
                                 val activeChanges = event.changes.filter { it.pressed }
 
@@ -86,25 +90,61 @@ fun TouchPad(
                                     
                                     event.changes.forEach { it.consume() }
                                 } else {
+//                                    // Single finger move logic
+//                                    lastScrollY = 0f
+//                                    val change = activeChanges[0]
+//                                    val currentPos = change.position
+//
+//                                    // If we were just scrolling, don't move the mouse on the frame we switch back
+//                                    if (isScrolling) {
+//                                        lastPos = currentPos
+//                                        isScrolling = false
+//                                    } else {
+//                                        val dx = (currentPos.x - lastPos.x).toInt()
+//                                        val dy = (currentPos.y - lastPos.y).toInt()
+//
+//                                        if (dx != 0 || dy != 0) {
+//                                            moved = true
+////                                            onEvent(TrackpadUiEvent.SendTrackpadMove(dx, dy))
+//                                            onEvent(TrackpadUiEvent.SendTrackpadMove(dx*2, dy*2))
+//                                            lastPos = currentPos
+//                                        }
+//                                    }
+//                                    change.consume()
                                     // Single finger move logic
-                                    lastScrollY = 0f 
+                                    lastScrollY = 0f
                                     val change = activeChanges[0]
                                     val currentPos = change.position
-                                    
-                                    // If we were just scrolling, don't move the mouse on the frame we switch back
+
+// If we were just scrolling, don't move the mouse on the frame we switch back
                                     if (isScrolling) {
                                         lastPos = currentPos
                                         isScrolling = false
                                     } else {
-                                        val dx = (currentPos.x - lastPos.x).toInt()
-                                        val dy = (currentPos.y - lastPos.y).toInt()
+
+                                        val rawDx = currentPos.x - lastPos.x
+                                        val rawDy = currentPos.y - lastPos.y
+                                        val sensitivity = 1.4f
+
+
+
+                                        val dx = (rawDx * sensitivity).toInt()
+                                        val dy = (rawDy * sensitivity).toInt()
+
 
                                         if (dx != 0 || dy != 0) {
                                             moved = true
-                                            onEvent(TrackpadUiEvent.SendTrackpadMove(dx, dy))
-                                            lastPos = currentPos
+                                            onEvent(
+                                                TrackpadUiEvent.SendTrackpadMove(
+                                                    dx,
+                                                    dy
+                                                )
+                                            )
                                         }
+
+                                        lastPos = currentPos
                                     }
+
                                     change.consume()
                                 }
                             }
