@@ -219,7 +219,7 @@ This architecture improves:
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Sachinslemenceu/TapTrack
 ```
 
 Open the project in Android Studio and run it on a physical Android device connected to the same local network as the desktop application.
