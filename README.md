@@ -154,27 +154,28 @@ Built using modern Android development practices with a strong focus on maintain
 ## Project Structure
 
 ```text
-com.taptrack
-
-├── data
-│   ├── datasource
-│   ├── repository
-│   └── network
-│
-├── domain
-│   ├── model
-│   ├── repository
-│   └── usecase
-│
-├── presentation
-│   ├── authentication
-│   ├── scanner
-│   ├── home
-│   └── shared
+app
 │
 ├── di
 │
-└── core
+├── core
+│
+└── features
+    │
+    ├── authentication
+    │   ├── ui
+    │   ├── domain
+    │   └── data
+    │
+    ├── connection
+    │   ├── ui
+    │   ├── domain
+    │   └── data
+    │
+    └── mousepad
+        ├── ui
+        ├── domain
+        └── data
 ```
 
 ---
@@ -196,7 +197,7 @@ Use Cases
 Repositories
         │
         ▼
-Data Sources
+Data Sources / Services
         │
         ▼
 Firebase / DataStore / UDP Layer
