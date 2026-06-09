@@ -12,11 +12,6 @@ TapTrack consists of an Android client and a desktop companion application that 
 
 ---
 
-## Demo
-
-### Product Demo Video
-
----
 
 ## Overview
 
