@@ -1,137 +1,299 @@
+# TapTrack
+
+A low-latency remote PC control system that transforms an Android smartphone into a wireless touchpad using UDP-based communication and QR-powered device pairing.
+
+TapTrack consists of an Android client and a desktop companion application that communicate over a local network to provide responsive cursor control with minimal overhead.
+
+**Version:** 1.1.0
 
 
-# 🖱️ TapTrack
-
-**TapTrack** is an Android-based remote mouse control app built with **Kotlin**, following the **MVI** pattern and **Clean Architecture** principles. It allows users to seamlessly control their computer using their smartphone with an intuitive, responsive interface.It is optimized to have the minimum latency as possible. It uses **UDP Protocol** to connect to the Pc Server.The Pc Server code repo is attached at the end of the page.
-
-## 📂 Companion Desktop App
-
-This mobile application pairs with the official TapTrack PC client:
-
-👉 [**TapTrack PC**](https://github.com/Sachinslemenceu/TapTrack-PC.git)  
-A Kotlin Multiplatform Desktop app that listens for connections via UDP and displays real-time data about connected devices.
-
-Make sure to have the PC client running on the same local network for seamless discovery and interaction.
----
-
-## 🚀 Demo Example
-
-- Demo Screen Shots
-
-<p align="center">
-  <img width="1776" height="1090" alt="Group 75" src="https://github.com/user-attachments/assets/90f0d42c-acd8-4b88-9896-c6a7b883aa15" />
-  <!-- <img src="https://github.com/user-attachments/assets/ac1fbf9a-27f0-4117-93e2-69f8ac17af1d" width="15%" /> -->
-  <!-- <img src="https://github.com/user-attachments/assets/acd89a82-982d-4d86-97e6-716b2c4e2b5b" width="15%" /> -->
-  <!-- <img src="https://github.com/user-attachments/assets/530b3cff-0ecf-44e7-b045-0b4a11765d20" width="15%" /> -->
-  <!-- <img src="https://github.com/user-attachments/assets/79610e13-063f-4d3a-9ef7-688f24f9ea94" width="15%" /> -->
-  <!-- <img src="https://github.com/user-attachments/assets/2ba422f3-f0df-47ac-8a89-1f3f4aac2e3a" width="15%" /> -->
-</p>
-<p align="center">
-  <img width="3065" height="1859" alt="Group 76" src="https://github.com/user-attachments/assets/46080dbc-6325-4cb1-b9b1-b3ee5ae7a7b2" />
-  <!-- <img src="https://github.com/user-attachments/assets/28ab9701-3e20-47ec-a5fb-92fd6b40ac2b" width="15%" /> -->
-  <!-- <img src="https://github.com/user-attachments/assets/91f527a0-805c-4065-bfbc-96546a1b0b59" width="15%" /> -->
-  <!-- <img src="https://github.com/user-attachments/assets/b14b04e2-2e31-4950-9d7f-5a46de18de41" width="15%" /> -->
-  <!-- <img src="https://github.com/user-attachments/assets/db73e8c1-a046-42c5-9313-0c43f7111c5a" width="15%" /> -->
-</p>
-<p align="center">
-  <!-- <img src="https://github.com/user-attachments/assets/eaa1a16f-ae68-4285-b78e-0b9874a411d6" width="40%" /> -->
-  <!-- <img src="https://github.com/user-attachments/assets/ff599fe6-e1d5-482b-81e4-ca338f636fc9" width="40%" /> -->
-</p>
-
-- Demo Video
-
-
-
-https://github.com/user-attachments/assets/b0efb37d-fcd2-464b-9020-455da7a69c67
-
-
+<img width="1536" height="1024" alt="taptrack_hero" src="https://github.com/user-attachments/assets/5772ebd7-37c8-48d0-99b2-f64ae1fd7567" />
 
 
 ---
-## 🚀 Features Implemented
 
-✅ **Splash Screen**  
-- Animations using [Lottie](https://airbnb.io/lottie/) for a modern and smooth user experience.
 
-✅ **User Authentication**  
-- Secure Email/Password login using **Firebase Authentication**.
+## Overview
 
-✅ **Login Session Persistence**  
-- Seamless login experience using **Preference DataStore** to retain sessions.
+TapTrack enables users to control a computer remotely using an Android device without requiring additional hardware.
 
-✅ **Home Page UI**  
-- Fully designed home screen with real-time mousepad interaction area.
-- Gesture handling with **pointerInput** for touch tracking.
+The project was designed with a focus on:
 
-✅ **Socket Management**  
-- Uses **Datagram packets** to send user inputs to the PC Server.
-- Developed a **custom Protocol** that minimize the latency.
-- Uses **Manual int to Byte Conversions** to **optimize delays** while sending packets via UDP.
-- Lifecycle-aware socket connection: socket auto-closes when the view is destroyed or the app exits.
+* Low-latency communication
+* Efficient network transmission
+* Responsive gesture handling
+* Scalable software architecture
+* Cross-platform system integration
 
-✅ **QR Code Scanner**  
-- Uses **ZXing Library** to implement QR Code Scanner.
-- It is used for a secure and convenient way to connect to the PC Server.
-- https://github.com/zxing/zxing
-  
-✅ **Core Mouse Control**  
-- Cursor movement with finger gestures.
-- Optimized touch detection using the `pointerInput` modifier for drag and tap responsiveness.
+The system consists of:
 
-✅ **Right-click, Drag, and Scroll Support (Partially Integrated)**  
-- Multitouch and long-press gesture experiments in progress.
-
-✅ **Inbuilt Wi-Fi Connection Management**  
-- Integrated with Android system services to show current Wi-Fi status and prompt network connection if not connected.
-
-✅ **Session-Aware Navigation**  
-- Automatically bypasses splash/login screens if session is active using **Preference DataStore**.
-
-✅ **MVI Architecture**  
-- Built using a scalable **Model-View-Intent** approach for unidirectional data flow and easier debugging.
-
-✅ **Clean Architecture**  
-- Modular project structure separated into:
-  - **UI Layer** – Jetpack Compose-based frontend
-  - **Domain Layer** – Use cases and business logic
-  - **Data Layer** – Firebase, preferences, network handling
-
-✅ **Dependency Injection with Koin**  
-- Lightweight and lifecycle-aware DI setup for seamless component access.
+* Android Application
+* Desktop Companion Application
+* UDP Communication Layer
+* QR-Based Pairing System
 
 ---
 
-## 🧩 Tech Stack
+## System Architecture
 
-- **Kotlin**
-- **Jetpack Compose**
-- **Firebase Authentication**
-- **Preference DataStore**
-- **Koin** (Dependency Injection)
-- **MVI Architecture**
-- **Socket Programming (UDP Protocol)**
-- **Clean Architecture (UI + Domain + Data Layers)**
-- **Android System Services**
-- **Lottie Animations**
-
----
-
-
-## 🧠 Contribution
-
-Currently an open-source project, but contributors are welcome to fork the repo and commit changes.
-
----
-
-## 👨‍💻 Author
-
-Built with ❤️ by **Sachin Pradeep Singh**  
-
----
-
-## 📄 License
-
-MIT License
+```text
+┌───────────────────────┐
+│   Android Client      │
+│  (Jetpack Compose)    │
+└───────────┬───────────┘
+            │
+            │ QR Pairing
+            ▼
+┌───────────────────────┐
+│   UDP Communication   │
+│    Custom Protocol    │
+└───────────┬───────────┘
+            │
+            ▼
+┌───────────────────────┐
+│ Desktop Companion App │
+│  Kotlin Multiplatform │
+└───────────┬───────────┘
+            │
+            ▼
+┌───────────────────────┐
+│ Native Mouse Control  │
+└───────────────────────┘
+```
 
 ---
 
+## Companion Desktop Application
+
+TapTrack requires the companion desktop application to be running on the target machine.
+
+Desktop Repository:
+
+https://github.com/Sachinslemenceu/TapTrack-PC
+
+The desktop application listens for incoming UDP packets, manages active device connections, and translates incoming touch events into native mouse actions.
+
+Both devices must be connected to the same local network.
+
+---
+
+## Key Features
+
+### Real-Time Remote Touchpad
+
+Control a computer cursor directly from an Android device using responsive touch gestures and real-time packet transmission.
+
+### QR-Based Device Pairing
+
+Connect to the desktop application instantly through QR code scanning without manually entering IP addresses or ports.
+
+### Low-Latency UDP Communication
+
+Uses UDP networking and a lightweight custom packet structure to reduce transmission overhead and improve responsiveness.
+
+### Custom Binary Protocol
+
+Implements optimized packet encoding using manual byte conversion techniques to minimize packet size and processing time.
+
+### Desktop Companion Integration
+
+Works seamlessly with the TapTrack desktop client to provide real-time device connectivity and control.
+
+### Session Persistence
+
+Maintains authenticated user sessions and restores application state automatically on launch.
+
+### Network Awareness
+
+Monitors Wi-Fi connectivity and guides users through the connection process when required.
+
+### Production-Oriented Architecture
+
+Built using modern Android development practices with a strong focus on maintainability and scalability.
+
+---
+
+## Technical Highlights
+
+### Networking
+
+* UDP Socket Communication
+* Datagram Packet Transmission
+* Custom Binary Packet Protocol
+* Low-Overhead Message Encoding
+* Local Network Device Discovery
+
+### Android Development
+
+* Kotlin
+* Jetpack Compose
+* Coroutines
+* State Management
+* Navigation Compose
+
+### Architecture
+
+* Clean Architecture
+* Model-View-Intent (MVI)
+* Dependency Injection
+* Repository Pattern
+* Lifecycle-Aware Components
+
+### Backend Services
+
+* Firebase Authentication
+* Preference DataStore
+
+---
+
+## Project Structure
+
+```text
+app
+│
+├── di
+│
+├── core
+│
+└── features
+    │
+    ├── authentication
+    │   ├── ui
+    │   ├── domain
+    │   └── data
+    │
+    ├── connection
+    │   ├── ui
+    │   ├── domain
+    │   └── data
+    │
+    └── mousepad
+        ├── ui
+        ├── domain
+        └── data
+```
+
+---
+
+## Development Approach
+
+TapTrack follows Clean Architecture principles to maintain clear separation of concerns between business logic, presentation logic, and data management.
+
+```text
+Presentation Layer
+        │
+        ▼
+ViewModel (MVI)
+        │
+        ▼
+Use Cases
+        │
+        ▼
+Repositories
+        │
+        ▼
+Data Sources / Services
+        │
+        ▼
+Firebase / DataStore / UDP Layer
+```
+
+This architecture improves:
+
+* Maintainability
+* Testability
+* Scalability
+* Feature Development Speed
+
+---
+
+## Installation
+
+### Android Application
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Sachinslemenceu/TapTrack
+```
+
+Open the project in Android Studio and run it on a physical Android device connected to the same local network as the desktop application.
+
+### Desktop Companion
+
+Clone the desktop repository:
+
+```bash
+git clone https://github.com/Sachinslemenceu/TapTrack-PC
+```
+
+Launch the desktop application and scan the generated QR code using the Android application.
+
+---
+
+## Current Capabilities
+
+Version 1.1.0 currently supports:
+
+* User Authentication
+* Session Persistence
+* QR-Based Device Pairing
+* Real-Time Cursor Control
+* UDP Communication
+* Desktop Integration
+* Local Network Connectivity Management
+
+---
+
+## Roadmap
+
+Future improvements under consideration:
+
+* Right Click Support
+* Two-Finger Scrolling
+* Drag and Drop Operations
+* Media Controls
+* Multi-Monitor Support
+* Custom Gesture Mapping
+* Keyboard Input Support
+* File Transfer Functionality
+
+---
+
+## Why TapTrack?
+
+TapTrack was developed as a real-world networking and systems engineering project that combines Android development, desktop development, network programming, and software architecture principles into a complete end-to-end product.
+
+The project demonstrates:
+
+* Real-Time Communication Systems
+* UDP Network Programming
+* Cross-Platform Development
+* Mobile Application Engineering
+* Software Architecture Design
+* Product-Oriented Development
+
+---
+
+## Contributing
+
+Contributions are welcome.
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Submit a pull request
+
+---
+
+## Author
+
+Sachin Pradeep Singh
+
+Software Engineer focused on Android Development, Real-Time Systems, Product Engineering, and Cross-Platform Applications.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
