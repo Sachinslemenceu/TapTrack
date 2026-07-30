@@ -1,5 +1,6 @@
 package com.slemenceu.taptrack.features.authentication.ui.splash_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.slemenceu.taptrack.features.authentication.domain.AuthRepository
@@ -32,7 +33,6 @@ class SplashViewModel(
             is SplashUiEvent.OnAnimationDone -> {
                 viewModelScope.launch {
                     if (isLoggedIn.value == true) {
-//                        authRepo.saveFirstLoginStatus(true)
                         sendEffect(SplashUiEffect.NavigateToHome)
                     } else {
                         _uiState.value = _uiState.value.copy(isAnimationFinished = true)
